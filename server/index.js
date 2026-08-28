@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import pool from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
+import habitRoutes from './routes/habitRoutes.js';
 
 dotenv.config();
 
