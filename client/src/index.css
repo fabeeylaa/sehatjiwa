@@ -212,6 +212,95 @@ a {
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+
+.eyebrow--green { color: var(--primary-contrast); }
+
+.screening-card {
+  background: #e8f5e9;
+  border-radius: 16px;
+  padding: 28px 24px 24px 24px;
+  position: relative;
+}
+
+.screening-card__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-contrast);
+  margin: 0;
+}
+
+.progress-ring {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring__label {
+  position: absolute;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--primary-contrast);
+}
+
+.habit-heading__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-contrast);
+  margin: 8px 0 4px;
+}
+
+.habit-heading__sub {
+  color: var(--gray);
+  line-height: 1.6;
+}
+
+.chart-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.chart-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.chart-card__title {
+  font-weight: 700;
+  color: var(--primary-contrast);
+}
+
+.chart-card__meta {
+  font-size: 0.8rem;
+  color: var(--gray);
+}
+
 body {
   padding-top: 70px;
 }
