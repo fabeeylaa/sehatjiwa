@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import pool from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import habitRoutes from './routes/habitRoutes.js';
-
+import assessmentRoutes from './routes/assessmentRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -16,6 +16,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/habits', habitRoutes);           
+app.use('/api/assessments', assessmentRoutes);
 
 app.get('/', (req, res) => {
   res.send('SehatJiwa API is running');
@@ -24,3 +26,4 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
