@@ -6,6 +6,7 @@ import pool from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import habitRoutes from './routes/habitRoutes.js';
 import assessmentRoutes from './routes/assessmentRoutes.js';
+import articleRoutes from './routes/articleRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/habits', habitRoutes);           
 app.use('/api/assessments', assessmentRoutes);
+app.use('/api/articles', articleRoutes);
 
 app.get('/', (req, res) => {
   res.send('SehatJiwa API is running');
