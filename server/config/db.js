@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+pkg.types.setTypeParser(1082, (val) => val); // cegah kolom DATE di-convert jadi Date object (fix timezone)
+
 const { Pool } = pkg;
 
 const pool = new Pool({
