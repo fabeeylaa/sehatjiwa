@@ -3,30 +3,32 @@ import jwt from "jsonwebtoken";
 import pool from "../config/db.js";
 
 export const register = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, username } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ message: 'Username wajib diisi' });
+  }
 
   try {
     const existingUser = await pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email],
+      'SELECT * FROM users WHERE email = $1 OR username = $2',
+      [email, username]
     );
     if (existingUser.rows.length > 0) {
-      return res.status(400).json({ message: "Email sudah terdaftar" });
+      return res.status(400).json({ message: 'Email atau username sudah dipakai' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await pool.query(
-      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, role",
-      [name, email, hashedPassword],
+      'INSERT INTO users (name, email, username, password) VALUES ($1, $2, $3, $4) RETURNING id, name, email, username, role',
+      [name, email, username, hashedPassword]
     );
 
-    res
-      .status(201)
-      .json({ message: "Registrasi berhasil", user: newUser.rows[0] });
+    res.status(201).json({ message: 'Registrasi berhasil', user: newUser.rows[0] });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Terjadi kesalahan server" });
+    res.status(500).json({ message: 'Terjadi kesalahan server' });
   }
 };
 
