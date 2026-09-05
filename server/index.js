@@ -9,6 +9,7 @@ import assessmentRoutes from './routes/assessmentRoutes.js';
 import articleRoutes from './routes/articleRoutes.js';
 import bookmarkRoutes from './routes/bookmarkRoutes.js';
 import friendRoutes from './routes/friendRoutes.js';
+import challengeRoutes from './routes/challengeRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api/assessments', assessmentRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/social/friends', friendRoutes);
+app.use('/api/social/challenges', challengeRoutes);
 
 app.get('/', (req, res) => {
   res.send('SehatJiwa API is running');
