@@ -1,4 +1,5 @@
 import pool from "../config/db.js";
+import { calculateStreak } from "../utils/streak.js";
 
 export const addFriend = async (req, res) => {
   const { identifier } = req.body; // bisa email atau username
@@ -57,10 +58,48 @@ export const getFriends = async (req, res) => {
       JOIN users u ON u.id = CASE WHEN f.requester_id = $1 THEN f.addressee_id ELSE f.requester_id END
       WHERE f.requester_id = $1 OR f.addressee_id = $1
       ORDER BY f.created_at DESC`,
-      [userId],
+      [userId]
     );
 
-    res.status(200).json(result.rows);
+    const friends = result.rows;
+
+    const acceptedFriendIds = friends
+      .filter((f) => f.status === "accepted")
+      .map((f) => f.friend_id);
+
+    let mutualStreaks = {};
+
+    if (acceptedFriendIds.length > 0) {
+      const logsResult = await pool.query(
+        `SELECT user_id, ARRAY_AGG(DISTINCT log_date) AS log_dates
+         FROM habit_logs
+         WHERE user_id = ANY($1)
+         GROUP BY user_id`,
+        [[userId, ...acceptedFriendIds]]
+      );
+
+      const logsByUser = {};
+      logsResult.rows.forEach((row) => {
+        logsByUser[row.user_id] = row.log_dates.map(
+          (d) => new Date(d).toISOString().split("T")[0]
+        );
+      });
+
+      const myDates = new Set(logsByUser[userId] || []);
+
+      acceptedFriendIds.forEach((friendId) => {
+        const friendDates = logsByUser[friendId] || [];
+        const overlap = friendDates.filter((d) => myDates.has(d));
+        mutualStreaks[friendId] = calculateStreak(overlap);
+      });
+    }
+
+    const enriched = friends.map((f) => ({
+      ...f,
+      mutual_streak: f.status === "accepted" ? mutualStreaks[f.friend_id] ?? 0 : null,
+    }));
+
+    res.status(200).json(enriched);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Terjadi kesalahan server" });
