@@ -1,5 +1,26 @@
 import pool from "../config/db.js";
 
+const ARTICLE_RECOMMENDATION_MAP = {
+  phq9: {
+    Minimal: ["mental health"],
+    Ringan: ["mental health", "tidur"],
+    Sedang: ["mental health", "tidur", "nutrisi"],
+    "Sedang-berat": ["mental health"],
+    Berat: ["mental health"],
+  },
+  gad7: {
+    Minimal: ["mental health"],
+    Ringan: ["mental health", "olahraga"],
+    Sedang: ["mental health", "olahraga", "tidur"],
+    Berat: ["mental health"],
+  },
+  wellness_check: {
+    Baik: ["mental health"],
+    "Perlu perhatian": ["tidur", "nutrisi", "olahraga"],
+    "Disarankan konsultasi": ["mental health"],
+  },
+};
+
 // GET /assessments — daftar semua kuesioner yang tersedia
 export const getAssessments = async (req, res) => {
   try {
@@ -129,11 +150,18 @@ export const submitAssessment = async (req, res) => {
 
     await client.query("COMMIT");
 
+    const assessmentInfo = await pool.query("SELECT code FROM assessments WHERE id = $1", [id]);
+    const assessmentCode = assessmentInfo.rows[0]?.code;
+
     // rekomendasi artikel sesuai kategori hasil
-    const articles = await pool.query(
-      "SELECT id, title, category FROM articles WHERE category = $1 ORDER BY created_at DESC LIMIT 5",
-      [category.category_label],
-    );
+    const topics = ARTICLE_RECOMMENDATION_MAP[assessmentCode]?.[category.category_label] || [];
+
+    const articles = topics.length > 0
+      ? await pool.query(
+          "SELECT id, title, category FROM articles WHERE category = ANY($1) ORDER BY created_at DESC LIMIT 5",
+          [topics],
+        )
+      : { rows: [] };
 
     res.status(201).json({
       message: "Assessment berhasil disubmit",
