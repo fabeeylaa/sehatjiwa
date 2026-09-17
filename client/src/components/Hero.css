@@ -1,0 +1,256 @@
+.hero {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 4rem;
+  align-items: center;
+  padding: 11rem var(--margin-desktop) 7rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  background: var(--surface-bright);
+  position: relative;
+  overflow: hidden;
+  min-height: 85vh;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  bottom: -200px;
+  left: -150px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--mint-100) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.125rem;
+  background: var(--primary-container);
+  color: var(--primary);
+  border: 1px solid var(--mint-200);
+  border-radius: var(--radius-pill);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 1.75rem;
+  width: fit-content;
+}
+
+.hero-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  color: var(--ink-900);
+}
+
+.hero-title .line-1 {
+  display: block;
+  color: var(--ink-900);
+}
+
+.hero-title .line-2 {
+  display: block;
+  color: var(--primary);
+}
+
+.hero-sub {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--on-surface-variant);
+  max-width: 480px;
+  margin-bottom: 2.5rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-login {
+  display: block;
+  background: none;
+  padding: 0;
+  border: none;
+  color: var(--on-surface-variant);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.hero-login:hover {
+  color: var(--primary);
+}
+
+.hero-login a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hero-proof {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.avatar-stack {
+  display: flex;
+}
+
+.avatar-stack .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2.5px solid var(--white);
+  margin-left: -12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--primary);
+}
+
+.avatar-stack .avatar:first-child {
+  margin-left: 0;
+}
+
+.hero-proof-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.hero-proof-stars {
+  color: var(--amber-400);
+  font-size: 15px;
+  letter-spacing: 2px;
+}
+
+.hero-proof-note {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px;
+  color: var(--on-surface-variant);
+  font-weight: 500;
+}
+
+.hero-visual {
+  position: relative;
+}
+
+.hero-illustration {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--mint-100) 0%, var(--mint-300) 50%, var(--primary) 100%);
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+  box-shadow: var(--shadow-lg);
+}
+
+.float-card {
+  position: absolute;
+  background: var(--white);
+  border-radius: 1.35rem;
+  padding: 1rem 1.125rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  backdrop-filter: blur(8px);
+}
+
+.float-card .fc-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.float-card .fc-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink-900);
+  line-height: 1.3;
+}
+
+.float-card .fc-sub {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  color: var(--on-surface-variant);
+  font-weight: 500;
+}
+
+.float-card--top {
+  top: 20px;
+  right: -20px;
+}
+
+.float-card--bottom {
+  bottom: 40px;
+  left: -20px;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 7rem var(--margin-mobile) 3rem;
+  }
+
+  .hero::before {
+    bottom: -300px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 500px;
+    opacity: 0.06;
+  }
+
+  .hero-sub {
+    max-width: 100%;
+  }
+
+  .hero-proof {
+    justify-content: flex-start;
+  }
+
+  .hero-illustration {
+    min-height: 300px;
+    padding: 2rem;
+  }
+
+  .float-card--top,
+  .float-card--bottom {
+    position: static;
+    margin: 0.5rem 0;
+  }
+}

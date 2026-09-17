@@ -1,7 +1,9 @@
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
-import Features from "../components/Features";
-import Graph from "../components/Graph";
+import WhySection from "../components/WhySection";
+import ScreeningPreview from "../components/ScreeningPreview";
+import HabitTrackerPreview from "../components/HabitTrackerPreview";
+import ArticlesPreview from "../components/ArticlesPreview";
 import Footer from "../components/Footer";
 
 function LandingPage() {
@@ -9,8 +11,10 @@ function LandingPage() {
     <>
       <Navbar />
       <Hero />
-      <Features />
-      <Graph />
+      <WhySection />
+      <ScreeningPreview />
+      <HabitTrackerPreview />
+      <ArticlesPreview />
       <Footer />
     </>
   );
