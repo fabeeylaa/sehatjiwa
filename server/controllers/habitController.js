@@ -20,9 +20,17 @@ export const createHabit = async (req, res) => {
 export const getHabits = async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM habits WHERE user_id = $1 ORDER BY created_at DESC",
+      `SELECT h.id, h.user_id, h.title, h.description, h.frequency, h.target_count, h.created_at, h.updated_at,
+              EXISTS(SELECT 1 FROM habit_logs WHERE habit_id = h.id AND user_id = $1 AND log_date = CURRENT_DATE) as logged_today,
+              COUNT(CASE WHEN hl.log_date >= CURRENT_DATE - INTERVAL '6 days' THEN 1 END) as week_count
+       FROM habits h
+       LEFT JOIN habit_logs hl ON h.id = hl.habit_id AND hl.user_id = $1 AND hl.log_date >= CURRENT_DATE - INTERVAL '6 days'
+       WHERE h.user_id = $1
+       GROUP BY h.id
+       ORDER BY h.created_at DESC`,
       [req.user.id],
     );
+    
     res.status(200).json({ habits: result.rows });
   } catch (err) {
     console.error(err);
@@ -122,6 +130,23 @@ export const logHabit = async (req, res) => {
   }
 };
 
+export const unlogHabit = async (req, res) => {
+  const { id } = req.params;
+  const { log_date } = req.body;
+
+  try {
+    const date = log_date || new Date().toISOString().split('T')[0];
+    await pool.query(
+      "DELETE FROM habit_logs WHERE habit_id = $1 AND user_id = $2 AND log_date = $3",
+      [id, req.user.id, date],
+    );
+    res.status(200).json({ message: "Log habit dihapus" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Terjadi kesalahan server" });
+  }
+};
+
 export const getHabitLogs = async (req, res) => {
   const { id } = req.params;
 
@@ -131,6 +156,42 @@ export const getHabitLogs = async (req, res) => {
       [id, req.user.id],
     );
     res.status(200).json({ logs: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Terjadi kesalahan server" });
+  }
+};
+
+export const getWeeklyStats = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT DATE(hl.log_date) as date, COUNT(DISTINCT hl.habit_id) as count
+       FROM habit_logs hl
+       WHERE hl.user_id = $1 AND hl.log_date >= CURRENT_DATE - INTERVAL '6 days'
+       GROUP BY DATE(hl.log_date)
+       ORDER BY date ASC`,
+      [req.user.id],
+    );
+
+    const daysOfWeek = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    const today = new Date();
+    const chartData = [];
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      const dayIndex = date.getDay();
+      const entry = result.rows.find(r => r.date === dateStr);
+      
+      chartData.push({
+        day: daysOfWeek[dayIndex],
+        date: dateStr,
+        value: entry?.count || 0,
+      });
+    }
+    
+    res.status(200).json({ weekly: chartData });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Terjadi kesalahan server" });

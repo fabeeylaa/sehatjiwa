@@ -32,7 +32,11 @@ function AuthPage() {
       
       if (res.ok) {
         if (isLogin) {
-          navigate('/dashboard');
+          if (data.user.role === 'admin') {
+            navigate('/admin');
+          } else {
+            navigate('/dashboard');
+          }
         } else {
           setIsLogin(true);
           setError('Registrasi berhasil, silakan login');
