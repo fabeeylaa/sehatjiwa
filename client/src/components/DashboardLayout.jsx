@@ -7,7 +7,7 @@ function DashboardLayout({ user, children, menuItems }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const activeSection = menuItems.find(item => location.pathname === item.path) || menuItems[0];
+  const activeSection = menuItems.find(item => location.pathname === item.path || location.pathname.startsWith(item.path + '/')) || menuItems[0];
 
   return (
     <div className="shell">

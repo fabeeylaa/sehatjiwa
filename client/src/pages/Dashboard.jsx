@@ -5,6 +5,7 @@ import UserHome from './UserHome';
 import UserScreening from './UserScreening';
 import UserHabits from './UserHabits';
 import UserArticles from './UserArticles';
+import UserArticleDetail from './UserArticleDetail';
 import AdminOverview from './AdminOverview';
 import AdminArticles from './AdminArticles';
 import AdminAssessments from './AdminAssessments';
@@ -96,6 +97,7 @@ function Dashboard({ role }) {
             <Route path="/screening" element={<UserScreening />} />
             <Route path="/habits" element={<UserHabits />} />
             <Route path="/articles" element={<UserArticles />} />
+            <Route path="/articles/:slug" element={<UserArticleDetail />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </>
         )}
