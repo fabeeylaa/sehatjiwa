@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AuthPage.css';
+import './AuthPolish.css';
+import authIllustration from '../assets/auth-illustration.jpg';
+import { Activity, ClipboardCheck } from 'lucide-react';
+import logoSehatJiwa from '../assets/Logoosehatjiwa.jpeg';
 
 function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -50,13 +54,31 @@ function AuthPage() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
+    <div className="auth-container authx-container">
+      <div className="authx-layout">
+        <div className="authx-hero">
+          <div>
+            <h2>Kesehatan jiwa dan raga dalam satu tempat</h2>
+            <p>Pantau kebiasaan sehat, cek kondisimu lewat screening, dan tumbuh bersama komunitas.</p>
+          </div>
+          <div className="authx-art">
+            <img className="authx-img" src={authIllustration} alt="Ilustrasi seseorang bermeditasi di taman" />
+            <div className="authx-chip authx-chip-top">
+              <span className="authx-chip-icon"><Activity size={18} /></span>
+              <div className="authx-chip-text"><strong>Habit Tracker</strong><span>Pantau kebiasaan harian</span></div>
+            </div>
+            <div className="authx-chip authx-chip-bottom">
+              <span className="authx-chip-icon"><ClipboardCheck size={18} /></span>
+              <div className="authx-chip-text"><strong>Screening</strong><span>Cek kondisi mentalmu</span></div>
+            </div>
+          </div>
+          <div className="authx-quote">Satu langkah kecil setiap hari tetap berarti untuk kesehatan jiwamu.</div>
+        </div>
+        <div className="authx-main">
+      <div className="auth-card authx-card">
         <div className="auth-header">
           <div className="navbar-logo" onClick={() => navigate('/')} style={{cursor: 'pointer', marginBottom: '1.5rem'}}>
-            <svg viewBox="0 0 24 24" aria-hidden="true" style={{width: '32px', height: '32px', fill: 'var(--primary)'}}>
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
+            <img src={logoSehatJiwa} alt="Logo SehatJiwa" style={{ height: '44px', width: '44px', objectFit: 'contain' }} />
             SehatJiwa
           </div>
           <h1>{isLogin ? 'Selamat Datang' : 'Mulai Perjalanan Anda'}</h1>
@@ -132,6 +154,8 @@ function AuthPage() {
             {isLogin ? 'Masuk' : 'Daftar Sekarang'}
           </button>
         </form>
+      </div>
+      </div>
       </div>
     </div>
   );
