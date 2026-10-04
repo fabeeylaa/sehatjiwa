@@ -229,6 +229,189 @@ function Friends() {
   );
 }
 
+function Challenges() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    title: '',
+    habit_type: 'mental health',
+    duration_days: '7',
+    description: '',
+    max_participants: '',
+  });
+
+  const load = () => {
+    fetch('/api/social/challenges', { credentials: 'include' })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Gagal memuat tantangan');
+        setItems(Array.isArray(data) ? data : []);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const setField = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+
+  const createChallenge = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError('');
+    setInfo('');
+    try {
+      const body = {
+        title: form.title.trim(),
+        habit_type: form.habit_type,
+        duration_days: parseInt(form.duration_days, 10),
+        description: form.description.trim() || undefined,
+        max_participants: form.max_participants
+          ? parseInt(form.max_participants, 10)
+          : undefined,
+      };
+      const res = await fetch('/api/social/challenges', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Gagal membuat tantangan');
+      setInfo('Tantangan berhasil dibuat.');
+      setForm({ ...form, title: '', description: '', max_participants: '' });
+      load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const join = async (id) => {
+    setError('');
+    setInfo('');
+    try {
+      const res = await fetch(`/api/social/challenges/${id}/join`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Gagal ikut tantangan');
+      setInfo('Kamu berhasil ikut tantangan.');
+      load();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const canSubmit =
+    form.title.trim() && parseInt(form.duration_days, 10) > 0 && !saving;
+
+  return (
+    <>
+      <div className="card">
+        <h3>Buat Tantangan</h3>
+        <p className="hint">Ajak orang lain membangun kebiasaan bersama</p>
+        <form onSubmit={createChallenge} className="soc-grid">
+          <input
+            className="soc-input"
+            type="text"
+            maxLength={200}
+            placeholder="Judul tantangan"
+            value={form.title}
+            onChange={setField('title')}
+          />
+          <select
+            className="soc-input"
+            value={form.habit_type}
+            onChange={setField('habit_type')}
+          >
+            <option value="mental health">Mental health</option>
+            <option value="tidur">Tidur</option>
+            <option value="nutrisi">Nutrisi</option>
+            <option value="olahraga">Olahraga</option>
+          </select>
+          <input
+            className="soc-input"
+            type="number"
+            min="1"
+            placeholder="Durasi (hari)"
+            value={form.duration_days}
+            onChange={setField('duration_days')}
+          />
+          <input
+            className="soc-input"
+            type="number"
+            min="1"
+            placeholder="Maks. peserta (opsional)"
+            value={form.max_participants}
+            onChange={setField('max_participants')}
+          />
+          <input
+            className="soc-input soc-wide"
+            type="text"
+            placeholder="Deskripsi (opsional)"
+            value={form.description}
+            onChange={setField('description')}
+          />
+          <button
+            type="submit"
+            className="btn btn-primary soc-wide"
+            disabled={!canSubmit}
+          >
+            {saving ? 'Menyimpan...' : 'Buat Tantangan'}
+          </button>
+        </form>
+        {error && <div className="soc-error">{error}</div>}
+        {info && <div className="soc-info">{info}</div>}
+      </div>
+
+      <div className="card" style={{ marginTop: '16px' }}>
+        <h3>Daftar Tantangan</h3>
+        {loading && <p className="hint">Memuat...</p>}
+        {!loading && items.length === 0 && (
+          <p style={{ color: 'var(--on-surface-variant)' }}>
+            Belum ada tantangan. Buat yang pertama!
+          </p>
+        )}
+        {items.map((c) => (
+          <div key={c.id} className="history-row">
+            <div>
+              <div className="soc-name">{c.title}</div>
+              <div className="soc-sub">
+                {c.habit_type} · {c.duration_days} hari · {c.participant_count}
+                {c.max_participants ? `/${c.max_participants}` : ''} peserta
+              </div>
+              {c.description && <div className="soc-sub">{c.description}</div>}
+              {c.end_date && (
+                <div className="soc-sub">
+                  Berakhir {new Date(c.end_date).toLocaleDateString('id-ID')}
+                </div>
+              )}
+            </div>
+            {c.is_joined ? (
+              <div className="history-score">Sudah ikut</div>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={() => join(c.id)}
+              >
+                Ikut
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
 function UserSocial() {
   const [tab, setTab] = useState('leaderboard');
 
@@ -249,11 +432,18 @@ function UserSocial() {
         >
           Teman
         </button>
-        {/* Tab Tantangan ditambah di langkah berikutnya */}
+        <button
+          type="button"
+          className={`btn ${tab === 'challenges' ? 'btn-primary' : 'btn-ghost'}`}
+          onClick={() => setTab('challenges')}
+        >
+          Tantangan
+        </button>
       </div>
 
       {tab === 'leaderboard' && <Leaderboard />}
       {tab === 'friends' && <Friends />}
+      {tab === 'challenges' && <Challenges />}
     </div>
   );
 }

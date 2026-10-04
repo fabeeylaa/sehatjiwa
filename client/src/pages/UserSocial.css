@@ -74,3 +74,20 @@
   color: var(--forest-deep);
   font-size: 13px;
 }
+
+.soc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.soc-wide {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+  .soc-grid {
+    grid-template-columns: 1fr;
+  }
+}
