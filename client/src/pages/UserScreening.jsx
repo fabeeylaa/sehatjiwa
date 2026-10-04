@@ -1,6 +1,23 @@
 import { useEffect, useState } from "react";
 import "../pages/Dashboard.css";
 import "./UserScreening.css";
+import "./UserScreeningPolish.css";
+import { Brain, HeartPulse, ClipboardCheck, ShieldCheck } from "lucide-react";
+
+const scrIcons = [
+  <Brain size={22} />,
+  <HeartPulse size={22} />,
+  <ClipboardCheck size={22} />,
+];
+
+const scrBadge = (label = "") => {
+  const l = label.toLowerCase();
+  if (l.includes("berat") || l.includes("perhatian")) return "scrx-badge-berat";
+  if (l.includes("sedang")) return "scrx-badge-sedang";
+  if (["ringan", "minimal", "baik", "normal"].some((k) => l.includes(k)))
+    return "scrx-badge-ringan";
+  return "";
+};
 
 function UserScreening() {
   // mode: 'home' (daftar + riwayat) | 'quiz' | 'result'
@@ -180,8 +197,8 @@ function UserScreening() {
           <h3>Hasil Screening</h3>
           <p className="hint">{quiz?.assessment?.title}</p>
 
-          <div className="scr-result-score">{r.category_label}</div>
-          <div className="history-score">Skor: {r.total_score}</div>
+          <div className="scrx-result-box"><div className="scr-result-score">{r.category_label}</div>
+          <div className="history-score">Skor: {r.total_score}</div></div>
 
           {r.result_message && (
             <p className="scr-result-msg" style={{ marginTop: "12px" }}>
@@ -227,6 +244,11 @@ function UserScreening() {
   // ===== TAMPILAN AWAL: DAFTAR KUESIONER + RIWAYAT =====
   return (
     <div className="tab-panel">
+      <div className="scrx-hero">
+        <h2>Kenali kondisimu, satu langkah kecil</h2>
+        <p>Pilih kuesioner di bawah dan jawab sesuai yang kamu rasakan akhir-akhir ini. Tidak ada jawaban benar atau salah.</p>
+        <span className="scrx-note"><ShieldCheck size={14} /> Hasil screening bukan diagnosis</span>
+      </div>
       <div className="card">
         <h3>Mulai Screening</h3>
         <p className="hint">Pilih kuesioner yang ingin kamu isi</p>
@@ -234,12 +256,12 @@ function UserScreening() {
         {error && <div className="scr-error">{error}</div>}
 
         <div className="scr-list">
-          {assessments.map((a) => (
+          {assessments.map((a, i) => (
             <div key={a.id} className="scr-item">
-              <div>
+              <div className="scrx-item-main"><span className={`scrx-icon scrx-tone-${i % 3}`}>{scrIcons[i % 3]}</span><div>
                 <div className="scr-item-title">{a.title}</div>
                 {a.source && <div className="scr-item-desc">{a.source}</div>}
-              </div>
+              </div></div>
               <button
                 type="button"
                 className="btn btn-primary btn-sm"
@@ -268,9 +290,9 @@ function UserScreening() {
                   <div className="history-date">
                     {new Date(result.created_at).toLocaleDateString("id-ID")}
                   </div>
-                  <div className="history-score">{result.category_label}</div>
+                  <span className={`scrx-badge ${scrBadge(result.category_label)}`}>{result.category_label}</span>
                 </div>
-                <div className="history-score">Skor: {result.total_score}</div>
+                <div className="history-score scrx-score">Skor: {result.total_score}</div>
               </div>
             ))}
           </div>

@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import '../pages/Dashboard.css';
 import './UserSocial.css';
-import { Flame, Check, CalendarDays, Users } from 'lucide-react';
+import './ChallengeNew.css';
+import './FriendsNew.css';
+import './LeaderboardNew.css';
+import { Flame, Check, CalendarDays, Users, Plus, X, Clock, Trophy, Brain, Moon, Apple, Dumbbell, Bell, UserPlus, Send } from 'lucide-react';
 
 function Leaderboard() {
   const [scope, setScope] = useState('global'); // 'global' | 'friends'
@@ -27,53 +30,106 @@ function Leaderboard() {
       .finally(() => setLoading(false));
   }, [scope]);
 
-  return (
-    <div className="card">
-      <h3>Leaderboard</h3>
-      <p className="hint">Diurutkan dari streak tertinggi</p>
+  const me = rows.find((r) => r.is_me);
+  const showPodium = rows.length >= 3;
+  const podium = showPodium ? [rows[1], rows[0], rows[2]] : [];
+  const rest = showPodium ? rows.slice(3) : rows;
 
-      <div className="soc-tabs" style={{ marginTop: '12px' }}>
-        <button
-          type="button"
-          className={`btn btn-sm ${scope === 'global' ? 'btn-primary' : 'btn-ghost'}`}
-          onClick={() => setScope('global')}
-        >
-          Global
-        </button>
-        <button
-          type="button"
-          className={`btn btn-sm ${scope === 'friends' ? 'btn-primary' : 'btn-ghost'}`}
-          onClick={() => setScope('friends')}
-        >
-          Teman
-        </button>
+  return (
+    <div className="lb-wrap">
+      <div className="card lb-head">
+        <div>
+          <h3>Leaderboard</h3>
+          <p className="hint" style={{ marginBottom: 0 }}>
+            Diurutkan dari streak tertinggi
+          </p>
+        </div>
+        <div className="lb-seg">
+          <button
+            type="button"
+            className={scope === 'global' ? 'on' : ''}
+            onClick={() => setScope('global')}
+          >
+            Global
+          </button>
+          <button
+            type="button"
+            className={scope === 'friends' ? 'on' : ''}
+            onClick={() => setScope('friends')}
+          >
+            Teman
+          </button>
+        </div>
       </div>
 
       {error && <div className="soc-error">{error}</div>}
       {loading && <p className="hint">Memuat...</p>}
 
       {!loading && !error && rows.length === 0 && (
-        <p style={{ color: 'var(--on-surface-variant)' }}>Belum ada data.</p>
+        <div className="card lb-empty">
+          <Trophy size={40} strokeWidth={1.2} />
+          <p>
+            {scope === 'friends'
+              ? 'Belum ada teman di leaderboard. Tambahkan teman dulu!'
+              : 'Belum ada data.'}
+          </p>
+        </div>
       )}
 
-      {!loading &&
-        rows.map((r) => (
-          <div
-            key={r.user_id}
-            className={`history-row soc-row ${r.is_me ? 'soc-me' : ''}`}
-          >
-            <div className="soc-left">
-              <div className={`soc-rank soc-rank-${r.rank_position <= 3 ? r.rank_position : 'n'}`}>{r.rank_position}</div>
-              <div className="soc-avatar">{(r.name || '?').charAt(0).toUpperCase()}</div>
-              <div>
+      {!loading && me && (
+        <div className="card lb-me">
+          <Avatar seed={me.username} name={me.name} size={56} />
+          <div className="lb-me-text">
+            <div className="lb-me-label">Peringkatmu</div>
+            <div className="lb-me-rank">#{me.rank_position}</div>
+          </div>
+          <div className="lb-me-stats">
+            <span className="soc-pill soc-pill-streak">
+              <Flame size={15} /> {me.current_streak} hari
+            </span>
+            <span className="soc-pill soc-pill-done">
+              <Check size={15} /> {me.total_habits_completed} selesai
+            </span>
+          </div>
+        </div>
+      )}
+
+      {!loading && showPodium && (
+        <div className="card lb-podium">
+          {podium.map((r) => (
+            <div
+              key={r.user_id}
+              className={`lb-pod lb-pod-${r.rank_position} ${r.is_me ? 'me' : ''}`}
+            >
+              {r.rank_position === 1 && <Trophy className="lb-crown" size={22} />}
+              <Avatar seed={r.username} name={r.name} size={r.rank_position === 1 ? 72 : 58} />
+              <div className="lb-pod-name">
+                {r.name}
+                {r.is_me ? ' (Kamu)' : ''}
+              </div>
+              <div className="lb-pod-sub">@{r.username}</div>
+              <div className="lb-pod-streak">
+                <Flame size={14} /> {r.current_streak} hari
+              </div>
+              <div className="lb-pod-base">{r.rank_position}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!loading && rest.length > 0 && (
+        <div className="card lb-list">
+          {rest.map((r) => (
+            <div key={r.user_id} className={`lb-row ${r.is_me ? 'me' : ''}`}>
+              <div className="lb-rank">{r.rank_position}</div>
+              <Avatar seed={r.username} name={r.name} size={44} />
+              <div className="lb-row-text">
                 <div className="soc-name">
                   {r.name}
                   {r.is_me ? ' (Kamu)' : ''}
                 </div>
                 <div className="soc-sub">@{r.username}</div>
               </div>
-            </div>
-            <div className="soc-stats">
               <span className="soc-pill soc-pill-streak">
                 <Flame size={15} /> {r.current_streak} hari
               </span>
@@ -81,26 +137,63 @@ function Leaderboard() {
                 <Check size={15} /> {r.total_habits_completed} selesai
               </span>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+      )}
     </div>
+  );
+}
+
+function Avatar({ seed, name, size = 46 }) {
+  const [failed, setFailed] = useState(false);
+  const initial = (name || seed || '?').charAt(0).toUpperCase();
+  if (failed) {
+    return (
+      <span className="fr-avatar fr-avatar-fallback" style={{ width: size, height: size }}>
+        {initial}
+      </span>
+    );
+  }
+  return (
+    <img
+      className="fr-avatar"
+      width={size}
+      height={size}
+      alt=""
+      src={`https://api.dicebear.com/9.x/personas/svg?seed=${encodeURIComponent(seed || name || 'x')}`}
+      onError={() => setFailed(true)}
+    />
   );
 }
 
 function Friends() {
   const [friends, setFriends] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const [identifier, setIdentifier] = useState('');
   const [sending, setSending] = useState(false);
+  const [adding, setAdding] = useState('');
 
   const load = () => {
-    fetch('/api/social/friends', { credentials: 'include' })
-      .then(async (res) => {
+    Promise.all([
+      fetch('/api/social/friends', { credentials: 'include' }).then(async (res) => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Gagal memuat teman');
-        setFriends(Array.isArray(data) ? data : []);
+        return Array.isArray(data) ? data : [];
+      }),
+      fetch('/api/social/leaderboard', { credentials: 'include' })
+        .then((res) => (res.ok ? res.json() : []))
+        .catch(() => []),
+    ])
+      .then(([f, board]) => {
+        setFriends(f);
+        const known = new Set(f.map((x) => x.username));
+        const recs = (Array.isArray(board) ? board : [])
+          .filter((r) => !r.is_me && !known.has(r.username))
+          .slice(0, 5);
+        setSuggestions(recs);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -110,6 +203,17 @@ function Friends() {
     load();
   }, []);
 
+  const addFriend = async (value) => {
+    const res = await fetch('/api/social/friends/add', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier: value }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Gagal mengirim permintaan');
+  };
+
   const sendRequest = async (e) => {
     e.preventDefault();
     const value = identifier.trim();
@@ -118,14 +222,7 @@ function Friends() {
     setError('');
     setInfo('');
     try {
-      const res = await fetch('/api/social/friends/add', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: value }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Gagal mengirim permintaan');
+      await addFriend(value);
       setInfo('Permintaan pertemanan terkirim.');
       setIdentifier('');
       load();
@@ -133,6 +230,21 @@ function Friends() {
       setError(err.message);
     } finally {
       setSending(false);
+    }
+  };
+
+  const quickAdd = async (username) => {
+    setAdding(username);
+    setError('');
+    setInfo('');
+    try {
+      await addFriend(username);
+      setInfo(`Permintaan ke @${username} terkirim.`);
+      load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setAdding('');
     }
   };
 
@@ -159,89 +271,162 @@ function Friends() {
   const accepted = friends.filter((f) => f.status === 'accepted');
 
   return (
-    <>
-      <div className="card">
-        <h3>Tambah Teman</h3>
-        <p className="hint">Masukkan username atau email temanmu</p>
-        <form onSubmit={sendRequest} className="soc-form">
-          <input
-            className="soc-input"
-            type="text"
-            placeholder="Username atau email"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-          />
-          <button type="submit" className="btn btn-primary" disabled={sending || !identifier.trim()}>
-            {sending ? 'Mengirim...' : 'Kirim'}
-          </button>
-        </form>
-        {error && <div className="soc-error">{error}</div>}
-        {info && <div className="soc-info">{info}</div>}
+    <div className="fr-wrap">
+      <div className="fr-topbar">
+        <div className="fr-bell" title="Permintaan masuk">
+          <Bell size={20} />
+          {incoming.length > 0 && <span className="fr-bell-badge">{incoming.length}</span>}
+        </div>
       </div>
 
-      {incoming.length > 0 && (
-        <div className="card" style={{ marginTop: '16px' }}>
-          <h3>Permintaan Masuk</h3>
-          {incoming.map((f) => (
-            <div key={f.id} className="history-row">
-              <div>
-                <div className="soc-name">{f.name}</div>
-                <div className="soc-sub">@{f.username}</div>
-              </div>
-              <div className="soc-btns">
-                <button type="button" className="btn btn-primary btn-sm" onClick={() => respond(f.id, 'accept')}>
-                  Terima
-                </button>
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => respond(f.id, 'reject')}>
-                  Tolak
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {error && <div className="soc-error">{error}</div>}
+      {info && <div className="soc-info">{info}</div>}
 
-      <div className="card" style={{ marginTop: '16px' }}>
-        <h3>Teman Kamu</h3>
-        {loading && <p className="hint">Memuat...</p>}
-        {!loading && accepted.length === 0 && (
-          <p style={{ color: 'var(--on-surface-variant)' }}>Belum ada teman.</p>
-        )}
-        {accepted.map((f) => (
-          <div key={f.id} className="history-row">
-            <div>
-              <div className="soc-name">{f.name}</div>
-              <div className="soc-sub">@{f.username}</div>
-            </div>
-            <div className="history-score">Streak bersama: {f.mutual_streak ?? 0} hari</div>
+      <div className="fr-layout">
+        <div className="fr-col">
+          <div className="card">
+            <h3>Tambah Teman</h3>
+            <p className="hint">Masukkan username atau email temanmu</p>
+            <form onSubmit={sendRequest} className="fr-form">
+              <div className="fr-input-wrap">
+                <input
+                  type="text"
+                  placeholder="Username atau email"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                />
+                <UserPlus size={18} />
+              </div>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={sending || !identifier.trim()}
+              >
+                <Send size={15} /> {sending ? 'Mengirim...' : 'Kirim'}
+              </button>
+            </form>
           </div>
-        ))}
-      </div>
 
-      {outgoing.length > 0 && (
-        <div className="card" style={{ marginTop: '16px' }}>
-          <h3>Menunggu Konfirmasi</h3>
-          {outgoing.map((f) => (
-            <div key={f.id} className="history-row">
-              <div>
-                <div className="soc-name">{f.name}</div>
-                <div className="soc-sub">@{f.username}</div>
+          <div className="card">
+            <h3>Rekomendasi Teman</h3>
+            <p className="hint">Pengguna lain yang bisa kamu ajak</p>
+            {loading ? (
+              <p className="hint">Memuat...</p>
+            ) : suggestions.length === 0 ? (
+              <p className="fr-empty">Belum ada rekomendasi saat ini.</p>
+            ) : (
+              <div className="fr-sug-list">
+                {suggestions.map((s) => (
+                  <div className="fr-sug" key={s.user_id}>
+                    <Avatar seed={s.username} name={s.name} size={52} />
+                    <div className="fr-sug-name">{s.name}</div>
+                    <div className="fr-sub">@{s.username}</div>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      disabled={adding === s.username}
+                      onClick={() => quickAdd(s.username)}
+                    >
+                      {adding === s.username ? '...' : 'Tambahkan'}
+                    </button>
+                  </div>
+                ))}
               </div>
-              <div className="history-score">Menunggu</div>
+            )}
+          </div>
+
+          {incoming.length > 0 && (
+            <div className="card">
+              <h3>Permintaan Masuk</h3>
+              {incoming.map((f) => (
+                <div className="fr-item" key={f.id}>
+                  <Avatar seed={f.username} name={f.name} />
+                  <div className="fr-item-text">
+                    <div className="soc-name">{f.name}</div>
+                    <div className="fr-sub">@{f.username}</div>
+                  </div>
+                  <div className="soc-btns">
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={() => respond(f.id, 'accept')}
+                    >
+                      Terima
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => respond(f.id, 'reject')}
+                    >
+                      Tolak
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
-      )}
-    </>
+
+        <div className="fr-col">
+          <div className="card">
+            <div className="fr-card-head">
+              <h3>Teman Kamu</h3>
+              <span className="fr-count">{accepted.length} teman</span>
+            </div>
+            {loading && <p className="hint">Memuat...</p>}
+            {!loading && accepted.length === 0 && (
+              <p className="fr-empty">Belum ada teman. Kirim permintaan pertamamu!</p>
+            )}
+            {accepted.map((f) => (
+              <div className="fr-item fr-friend" key={f.id}>
+                <Avatar seed={f.username} name={f.name} />
+                <div className="fr-item-text">
+                  <div className="soc-name">{f.name}</div>
+                  <div className="fr-sub">@{f.username}</div>
+                </div>
+                <span className="fr-streak">
+                  <Flame size={14} /> {f.mutual_streak ?? 0} hari
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {outgoing.length > 0 && (
+            <div className="card">
+              <h3>Menunggu Konfirmasi</h3>
+              {outgoing.map((f) => (
+                <div className="fr-item" key={f.id}>
+                  <Avatar seed={f.username} name={f.name} />
+                  <div className="fr-item-text">
+                    <div className="soc-name">{f.name}</div>
+                    <div className="fr-sub">@{f.username}</div>
+                  </div>
+                  <span className="fr-wait">Menunggu</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
 function Challenges() {
+  const CATS = {
+    'mental health': { label: 'Mental health', Icon: Brain, tone: 'purple' },
+    tidur: { label: 'Tidur', Icon: Moon, tone: 'blue' },
+    nutrisi: { label: 'Nutrisi', Icon: Apple, tone: 'orange' },
+    olahraga: { label: 'Olahraga', Icon: Dumbbell, tone: 'green' },
+  };
+
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [filter, setFilter] = useState('all');
   const [form, setForm] = useState({
     title: '',
     habit_type: 'mental health',
@@ -292,6 +477,7 @@ function Challenges() {
       if (!res.ok) throw new Error(data.message || 'Gagal membuat challenge');
       setInfo('Challenge berhasil dibuat.');
       setForm({ ...form, title: '', description: '', max_participants: '' });
+      setShowModal(false);
       load();
     } catch (err) {
       setError(err.message);
@@ -320,130 +506,227 @@ function Challenges() {
   const canSubmit =
     form.title.trim() && parseInt(form.duration_days, 10) > 0 && !saving;
 
+  const shown = items.filter((c) => {
+    if (filter === 'joined') return c.is_joined;
+    if (filter === 'open') return !c.is_joined;
+    return true;
+  });
+
+  const FILTERS = [
+    { id: 'all', label: 'Semua' },
+    { id: 'joined', label: 'Diikuti' },
+    { id: 'open', label: 'Tersedia' },
+  ];
+
   return (
     <>
-      <div className="card">
-        <h3>Buat Challenge</h3>
-        <p className="hint">Ajak orang lain membangun kebiasaan bersama</p>
-        <form onSubmit={createChallenge} className="soc-grid">
-          <input
-            className="soc-input"
-            type="text"
-            maxLength={200}
-            placeholder="Judul challenge"
-            value={form.title}
-            onChange={setField('title')}
-          />
-          <select
-            className="soc-input"
-            value={form.habit_type}
-            onChange={setField('habit_type')}
-          >
-            <option value="mental health">Mental health</option>
-            <option value="tidur">Tidur</option>
-            <option value="nutrisi">Nutrisi</option>
-            <option value="olahraga">Olahraga</option>
-          </select>
-          <input
-            className="soc-input"
-            type="number"
-            min="1"
-            placeholder="Durasi (hari)"
-            value={form.duration_days}
-            onChange={setField('duration_days')}
-          />
-          <input
-            className="soc-input"
-            type="number"
-            min="1"
-            placeholder="Maks. peserta (opsional)"
-            value={form.max_participants}
-            onChange={setField('max_participants')}
-          />
-          <input
-            className="soc-input soc-wide"
-            type="text"
-            placeholder="Deskripsi (opsional)"
-            value={form.description}
-            onChange={setField('description')}
-          />
-          <button
-            type="submit"
-            className="btn btn-primary soc-wide"
-            disabled={!canSubmit}
-          >
-            {saving ? 'Menyimpan...' : 'Buat Challenge'}
-          </button>
-        </form>
-        {error && <div className="soc-error">{error}</div>}
-        {info && <div className="soc-info">{info}</div>}
+      <div className="card chx-head">
+        <div>
+          <h3>Challenge</h3>
+          <p className="hint" style={{ marginBottom: 0 }}>
+            Ajak orang lain membangun kebiasaan bersama
+          </p>
+        </div>
+        <button
+          type="button"
+          className="btn btn-primary btn-sm"
+          onClick={() => setShowModal(true)}
+        >
+          <Plus size={16} /> Buat Challenge
+        </button>
       </div>
 
-      <div className="card" style={{ marginTop: '16px' }}>
-        <h3>Daftar Challenge</h3>
-        {loading && <p className="hint">Memuat...</p>}
-        {!loading && items.length === 0 && (
-          <p style={{ color: 'var(--on-surface-variant)' }}>
-            Belum ada challenge. Buat yang pertama!
+      <div className="chx-filters">
+        {FILTERS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            className={`chx-filter ${filter === f.id ? 'on' : ''}`}
+            onClick={() => setFilter(f.id)}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {error && <div className="soc-error">{error}</div>}
+      {info && <div className="soc-info">{info}</div>}
+      {loading && <p className="hint">Memuat...</p>}
+
+      {!loading && shown.length === 0 && (
+        <div className="card chx-empty">
+          <Trophy size={40} strokeWidth={1.2} />
+          <p>
+            {items.length === 0
+              ? 'Belum ada challenge. Buat yang pertama!'
+              : 'Tidak ada challenge di filter ini.'}
           </p>
-        )}
-        {items.map((c) => {
-          const pct = c.max_participants
-            ? Math.min(100, Math.round((c.participant_count / c.max_participants) * 100))
+        </div>
+      )}
+
+      <div className="chx-grid">
+        {shown.map((c) => {
+          const cat = CATS[c.habit_type] || {
+            label: c.habit_type,
+            Icon: Trophy,
+            tone: 'green',
+          };
+          const full =
+            c.max_participants && c.participant_count >= c.max_participants;
+          const end = c.end_date ? new Date(c.end_date) : null;
+          const daysLeft = end
+            ? Math.max(0, Math.ceil((end.getTime() - Date.now()) / 86400000))
             : null;
+          const timePct =
+            daysLeft !== null && c.duration_days
+              ? Math.min(
+                  100,
+                  Math.max(
+                    0,
+                    Math.round(((c.duration_days - daysLeft) / c.duration_days) * 100),
+                  ),
+                )
+              : null;
+          const Icon = cat.Icon;
           return (
-            <div key={c.id} className="history-row soc-chal">
-              <div className="soc-chal-main">
-                <div className="soc-chal-top">
-                  <span className="soc-chal-cat">{c.habit_type}</span>
-                  <span className="soc-chal-meta">
-                    <CalendarDays size={14} /> {c.duration_days} hari
-                  </span>
-                  <span className="soc-chal-meta">
-                    <Users size={14} /> {c.participant_count}
-                    {c.max_participants ? `/${c.max_participants}` : ''} peserta
-                  </span>
+            <div key={c.id} className="card chx-card">
+              <div className="chx-top">
+                <span className={`chx-icon tone-${cat.tone}`}>
+                  <Icon size={20} />
+                </span>
+                <span className={`chx-cat tone-${cat.tone}`}>{cat.label}</span>
+              </div>
+
+              <div className="chx-title">{c.title}</div>
+              {c.description ? (
+                <div className="chx-desc">{c.description}</div>
+              ) : (
+                <div className="chx-desc chx-desc-empty">Tanpa deskripsi</div>
+              )}
+
+              <div className="chx-chips">
+                <span className="chx-chip">
+                  <CalendarDays size={14} /> {c.duration_days} hari
+                </span>
+                <span className="chx-chip">
+                  <Users size={14} /> {c.participant_count}
+                  {c.max_participants ? `/${c.max_participants}` : ''} peserta
+                </span>
+              </div>
+
+              {timePct !== null && (
+                <div className="chx-time">
+                  <div className="chx-bar">
+                    <span style={{ width: `${timePct}%` }} />
+                  </div>
+                  <div className="chx-time-text">
+                    <Clock size={13} />
+                    {daysLeft === 0
+                      ? 'Berakhir hari ini'
+                      : `Berakhir dalam ${daysLeft} hari`}
+                  </div>
                 </div>
-                <div className="soc-name soc-chal-title">{c.title}</div>
-                {c.description && <div className="soc-sub">{c.description}</div>}
-                {pct !== null && (
-                  <div className="soc-bar">
-                    <span style={{ width: `${pct}%` }} />
-                  </div>
-                )}
-                {pct !== null && (
-                  <div className="soc-quota">
-                    {pct >= 100
-                      ? 'Kuota penuh'
-                      : `Kuota terisi ${c.participant_count}/${c.max_participants}`}
-                  </div>
-                )}
-                {c.end_date && (
-                  <div className="soc-sub">
-                    Berakhir {new Date(c.end_date).toLocaleDateString('id-ID')}
-                  </div>
+              )}
+
+              <div className="chx-action">
+                {c.is_joined ? (
+                  <span className="soc-pill soc-pill-done">
+                    <Check size={15} /> Sudah ikut
+                  </span>
+                ) : full ? (
+                  <button type="button" className="btn btn-ghost btn-sm" disabled>
+                    Penuh
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    onClick={() => join(c.id)}
+                  >
+                    Ikut
+                  </button>
                 )}
               </div>
-              {c.is_joined ? (
-                <span className="soc-pill soc-pill-done">
-                  <Check size={15} /> Sudah ikut
-                </span>
-              ) : (
-                <button
-                  type="button"
-                  className="btn btn-primary btn-sm"
-                  onClick={() => join(c.id)}
-                >
-                  Ikut
-                </button>
-              )}
             </div>
           );
         })}
       </div>
+
+      {showModal && (
+        <div className="habit-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="habit-modal chx-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="habit-modal-head">
+              <h3>Buat Challenge</h3>
+              <button
+                type="button"
+                className="habit-modal-close"
+                onClick={() => setShowModal(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <form onSubmit={createChallenge}>
+              <label className="habit-form-label">
+                Judul
+                <input
+                  type="text"
+                  maxLength={200}
+                  placeholder="Contoh: Tidur 7 jam setiap hari"
+                  value={form.title}
+                  onChange={setField('title')}
+                  autoFocus
+                />
+              </label>
+              <label className="habit-form-label">
+                Kategori
+                <select value={form.habit_type} onChange={setField('habit_type')}>
+                  <option value="mental health">Mental health</option>
+                  <option value="tidur">Tidur</option>
+                  <option value="nutrisi">Nutrisi</option>
+                  <option value="olahraga">Olahraga</option>
+                </select>
+              </label>
+              <div className="chx-row">
+                <label className="habit-form-label">
+                  Durasi (hari)
+                  <input
+                    type="number"
+                    min="1"
+                    value={form.duration_days}
+                    onChange={setField('duration_days')}
+                  />
+                </label>
+                <label className="habit-form-label">
+                  Maks. peserta
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="Opsional"
+                    value={form.max_participants}
+                    onChange={setField('max_participants')}
+                  />
+                </label>
+              </div>
+              <label className="habit-form-label">
+                Deskripsi
+                <input
+                  type="text"
+                  placeholder="Opsional"
+                  value={form.description}
+                  onChange={setField('description')}
+                />
+              </label>
+              <button type="submit" className="btn btn-primary" disabled={!canSubmit}>
+                {saving ? 'Menyimpan...' : 'Buat Challenge'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
+
 function UserSocial() {
   const [tab, setTab] = useState('leaderboard');
 

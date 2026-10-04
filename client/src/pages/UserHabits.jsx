@@ -19,6 +19,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import "../pages/Dashboard.css";
+import "./HabitsPolish.css";
 
 const SUGGESTIONS = [
   "Tidur 7-8 jam",
