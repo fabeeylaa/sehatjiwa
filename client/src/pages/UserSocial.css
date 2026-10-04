@@ -91,3 +91,143 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* percantik leaderboard */
+.soc-rank {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.soc-rank-1 { background: #f5b800; color: #fff; }
+.soc-rank-2 { background: #9aa4b2; color: #fff; }
+.soc-rank-3 { background: #cd7f32; color: #fff; }
+.soc-rank-n { background: transparent; color: var(--ink-soft); }
+
+.soc-avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--mint-100);
+  color: var(--forest-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.soc-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.soc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.soc-pill-streak { background: #fff1e0; color: #d9730d; }
+.soc-pill-done { background: var(--mint-100); color: var(--forest-deep); }
+
+.soc-me {
+  box-shadow: inset 0 0 0 1.5px var(--forest);
+}
+/* rapikan: semua baris leaderboard punya padding sama */
+.soc-row {
+  padding-left: 12px;
+  padding-right: 12px;
+  border-radius: var(--radius-md);
+}
+
+.soc-me .soc-avatar {
+  background: #fff;
+}
+/* percantik challenge */
+.soc-chal {
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.soc-chal-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.soc-chal-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.soc-chal-cat {
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--mint-100);
+  color: var(--forest-deep);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.soc-chal-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.soc-chal-title {
+  font-size: 17px;
+}
+
+.soc-bar {
+  height: 6px;
+  max-width: 320px;
+  border-radius: 999px;
+  background: var(--mint-100);
+  overflow: hidden;
+}
+
+.soc-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--forest);
+}
+
+.soc-chal .btn,
+.soc-chal .soc-pill {
+  flex-shrink: 0;
+}
+
+.soc-grid .soc-input:focus {
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+}
+.soc-quota {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: -2px;
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import '../pages/Dashboard.css';
 import './UserSocial.css';
+import { Flame, Check, CalendarDays, Users } from 'lucide-react';
 
 function Leaderboard() {
   const [scope, setScope] = useState('global'); // 'global' | 'friends'
@@ -59,10 +60,11 @@ function Leaderboard() {
         rows.map((r) => (
           <div
             key={r.user_id}
-            className={`history-row ${r.is_me ? 'soc-me' : ''}`}
+            className={`history-row soc-row ${r.is_me ? 'soc-me' : ''}`}
           >
             <div className="soc-left">
-              <div className="soc-rank">#{r.rank_position}</div>
+              <div className={`soc-rank soc-rank-${r.rank_position <= 3 ? r.rank_position : 'n'}`}>{r.rank_position}</div>
+              <div className="soc-avatar">{(r.name || '?').charAt(0).toUpperCase()}</div>
               <div>
                 <div className="soc-name">
                   {r.name}
@@ -71,8 +73,13 @@ function Leaderboard() {
                 <div className="soc-sub">@{r.username}</div>
               </div>
             </div>
-            <div className="history-score">
-              Streak {r.current_streak} hari · {r.total_habits_completed} selesai
+            <div className="soc-stats">
+              <span className="soc-pill soc-pill-streak">
+                <Flame size={15} /> {r.current_streak} hari
+              </span>
+              <span className="soc-pill soc-pill-done">
+                <Check size={15} /> {r.total_habits_completed} selesai
+              </span>
             </div>
           </div>
         ))}
@@ -380,34 +387,59 @@ function Challenges() {
             Belum ada challenge. Buat yang pertama!
           </p>
         )}
-        {items.map((c) => (
-          <div key={c.id} className="history-row">
-            <div>
-              <div className="soc-name">{c.title}</div>
-              <div className="soc-sub">
-                {c.habit_type} · {c.duration_days} hari · {c.participant_count}
-                {c.max_participants ? `/${c.max_participants}` : ''} peserta
-              </div>
-              {c.description && <div className="soc-sub">{c.description}</div>}
-              {c.end_date && (
-                <div className="soc-sub">
-                  Berakhir {new Date(c.end_date).toLocaleDateString('id-ID')}
+        {items.map((c) => {
+          const pct = c.max_participants
+            ? Math.min(100, Math.round((c.participant_count / c.max_participants) * 100))
+            : null;
+          return (
+            <div key={c.id} className="history-row soc-chal">
+              <div className="soc-chal-main">
+                <div className="soc-chal-top">
+                  <span className="soc-chal-cat">{c.habit_type}</span>
+                  <span className="soc-chal-meta">
+                    <CalendarDays size={14} /> {c.duration_days} hari
+                  </span>
+                  <span className="soc-chal-meta">
+                    <Users size={14} /> {c.participant_count}
+                    {c.max_participants ? `/${c.max_participants}` : ''} peserta
+                  </span>
                 </div>
+                <div className="soc-name soc-chal-title">{c.title}</div>
+                {c.description && <div className="soc-sub">{c.description}</div>}
+                {pct !== null && (
+                  <div className="soc-bar">
+                    <span style={{ width: `${pct}%` }} />
+                  </div>
+                )}
+                {pct !== null && (
+                  <div className="soc-quota">
+                    {pct >= 100
+                      ? 'Kuota penuh'
+                      : `Kuota terisi ${c.participant_count}/${c.max_participants}`}
+                  </div>
+                )}
+                {c.end_date && (
+                  <div className="soc-sub">
+                    Berakhir {new Date(c.end_date).toLocaleDateString('id-ID')}
+                  </div>
+                )}
+              </div>
+              {c.is_joined ? (
+                <span className="soc-pill soc-pill-done">
+                  <Check size={15} /> Sudah ikut
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => join(c.id)}
+                >
+                  Ikut
+                </button>
               )}
             </div>
-            {c.is_joined ? (
-              <div className="history-score">Sudah ikut</div>
-            ) : (
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
-                onClick={() => join(c.id)}
-              >
-                Ikut
-              </button>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );
