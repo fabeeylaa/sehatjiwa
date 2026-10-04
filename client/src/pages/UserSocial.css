@@ -40,3 +40,37 @@
   color: var(--error);
   font-size: 13px;
 }
+
+.soc-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.soc-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--on-surface);
+  font: inherit;
+}
+
+.soc-input:focus {
+  outline: none;
+  border-color: var(--forest);
+}
+
+.soc-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.soc-info {
+  margin-top: 12px;
+  color: var(--forest-deep);
+  font-size: 13px;
+}
