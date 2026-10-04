@@ -7,6 +7,7 @@ import UserHabits from './UserHabits';
 import UserArticles from './UserArticles';
 import UserArticleDetail from './UserArticleDetail';
 import UserSocial from './UserSocial';
+import UserProfile from './UserProfile';
 import AdminOverview from './AdminOverview';
 import AdminArticles from './AdminArticles';
 import AdminAssessments from './AdminAssessments';
@@ -97,6 +98,7 @@ function Dashboard({ role }) {
             <Route path="/" element={<AdminOverview />} />
             <Route path="/articles" element={<AdminArticles />} />
             <Route path="/assessments" element={<AdminAssessments />} />
+            <Route path="/profile" element={<UserProfile user={user} />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </>
         ) : (
@@ -107,6 +109,7 @@ function Dashboard({ role }) {
             <Route path="/articles" element={<UserArticles />} />
             <Route path="/articles/:slug" element={<UserArticleDetail />} />
             <Route path="/social" element={<UserSocial />} />
+            <Route path="/profile" element={<UserProfile user={user} />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </>
         )}

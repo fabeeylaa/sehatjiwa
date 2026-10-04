@@ -1,0 +1,139 @@
+.card.prof-card {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(100vh - 120px);
+}
+
+.prof-cover {
+  position: relative;
+  height: 170px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--primary), #86efac);
+  overflow: hidden;
+}
+
+.prof-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.prof-circle-a {
+  width: 220px;
+  height: 220px;
+  top: -90px;
+  right: -40px;
+}
+
+.prof-circle-b {
+  width: 130px;
+  height: 130px;
+  bottom: -60px;
+  left: 14%;
+}
+
+.prof-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 32px 32px;
+}
+
+.prof-avatar {
+  width: 112px;
+  height: 112px;
+  margin-top: -56px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  border: 6px solid #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  font-weight: 700;
+}
+
+.prof-name {
+  margin: 16px 0 8px;
+  font-size: 26px;
+}
+
+.prof-badge {
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.14);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.prof-grid {
+  width: 100%;
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.prof-tile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.prof-tile-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.prof-tile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.prof-tile-label {
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+.prof-tile-value {
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.prof-logout {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+/* perbaikan: avatar di atas header, dan jarak ke tombol logout */
+.prof-avatar {
+  position: relative;
+  z-index: 1;
+}
+
+.prof-grid {
+  margin-bottom: 28px;
+}
