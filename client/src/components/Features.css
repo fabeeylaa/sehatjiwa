@@ -30,16 +30,17 @@
 }
 
 .feature-card {
-  background: var(--surface-bright);
-  border: 1px solid var(--mint-200);
+  background: var(--surface);
+  border: 1px solid var(--outline-variant);
   border-radius: var(--radius-lg);
-  padding: 2.25rem 1.75rem;
+  padding: 2rem 1.75rem;
   transition: all 0.3s ease;
+  box-shadow: var(--shadow-card);
 }
 
 .feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
   border-color: var(--primary);
 }
 
@@ -62,7 +63,7 @@
 
 .feature-card h3 {
   font-family: 'Poppins', sans-serif;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: 0.6rem;
   color: var(--ink-900);

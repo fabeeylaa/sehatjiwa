@@ -44,13 +44,12 @@
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: 20px;
-  color: var(--on-primary-container);
+  color: var(--forest-deep);
 }
 
 .sb-logo svg {
   width: 28px;
   height: 28px;
-  fill: var(--primary);
 }
 
 .sb-nav {
@@ -90,63 +89,55 @@
 }
 
 .sb-link.active {
-  background: var(--primary);
-  color: var(--on-primary);
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+  background: #a6f699; /* Light green from the image */
+  color: var(--forest-deep);
+  box-shadow: none;
 }
 
 .sb-foot {
-  border-top: 1px solid var(--outline-variant);
   padding-top: 20px;
   margin-top: 20px;
 }
 
-.sb-user {
+.healthy-mind-pill {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.sb-user:hover {
-  background: var(--surface-container-low);
-}
-
-.sb-avatar {
-  width: 40px;
-  height: 40px;
+  gap: 10px;
+  background: #dcfce7;
+  padding: 12px 16px;
   border-radius: 12px;
-  background: var(--primary-container);
-  color: var(--on-primary-container);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  flex-shrink: 0;
+  color: var(--forest-deep);
+  font-weight: 600;
+  font-size: 13px;
+  position: relative;
 }
 
-.sb-user-info {
-  flex: 1;
-  min-width: 0;
+.healthy-mind-pill svg {
+  width: 18px;
+  height: 18px;
 }
 
-.sb-user-name {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--on-surface);
-  white-space: nowrap;
+.pill-bar {
+  position: absolute;
+  bottom: 8px;
+  left: 44px;
+  right: 16px;
+  height: 4px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 2px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: none; /* Just matching the text "Healthy Mind" style, though image shows a small line */
 }
 
-.sb-user-role {
-  font-size: 12px;
-  color: var(--on-surface-variant);
-  font-weight: 500;
+.healthy-mind-pill::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 36px;
+  width: 40px;
+  height: 4px;
+  background: var(--primary);
+  border-radius: 2px;
 }
 
 /* MAIN */
@@ -157,74 +148,109 @@
   flex-direction: column;
 }
 
-.topbar {
-  display: flex;
+.content {
+  padding: 40px;
+  flex: 1;
+  background: var(--surface-bright);
+}
+
+/* MOBILE TOPBAR */
+.mobile-topbar {
+  display: none;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 40px;
+  padding: 12px 16px;
   background: var(--surface);
   border-bottom: 1px solid var(--outline-variant);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
 }
 
-.topbar-left {
+.mobile-brand {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink-900);
 }
 
 .burger-btn {
-  display: none;
+  display: flex;
   flex-direction: column;
-  gap: 4px;
-  width: 32px;
+  gap: 5px;
   background: none;
   border: none;
-  padding: 0;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  transition: background 0.2s ease;
+}
+
+.burger-btn:hover {
+  background: var(--surface-container-low);
 }
 
 .burger-btn span {
-  display: block;
-  width: 24px;
+  width: 22px;
   height: 2px;
-  background: var(--on-surface);
+  background: var(--ink-900);
   border-radius: 2px;
+  transition: transform 0.2s;
 }
 
-.topbar h1 {
-  font-size: 24px;
-  font-weight: 800;
-  margin: 0;
-  color: var(--on-surface);
-  line-height: 1.2;
-}
+/* MOBILE RESPONSIVE */
+@media (max-width: 900px) {
+  .mobile-topbar {
+    display: flex;
+  }
 
-.topbar .sub {
-  font-size: 14px;
-  color: var(--on-surface-variant);
-  margin-top: 4px;
-  font-weight: 500;
-}
+  .sidebar {
+    position: fixed;
+    left: 0;
+    transform: translateX(-100%);
+    box-shadow: 12px 0 30px rgba(0, 0, 0, 0.08);
+    width: 260px;
+    z-index: 999;
+    height: 100vh;
+  }
 
-.topbar-right .sb-avatar {
-  border: 2px solid var(--white);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
+  .sidebar.open {
+    transform: translateX(0);
+  }
 
-.content {
-  padding: 40px;
-  flex: 1;
+  .sidebar-overlay.open {
+    display: block;
+  }
 }
 
 /* RESPONSIVE */
-@media (max-width: 1024px) {
-  .topbar {
-    padding: 16px 24px;
-  }
+@media (max-width: 1440px) {
   .content {
-    padding: 24px;
+    padding: 32px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 240px;
+    padding: 20px 12px;
+  }
+
+  .sb-logo {
+    font-size: 18px;
+    padding-bottom: 24px;
+  }
+
+  .sb-link {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .content {
+    padding: 28px;
   }
 }
 
@@ -233,29 +259,72 @@
     position: fixed;
     left: 0;
     transform: translateX(-100%);
-    box-shadow: 12px 0 30px rgba(0,0,0,0.05);
+    box-shadow: 12px 0 30px rgba(0, 0, 0, 0.08);
+    width: 260px;
+    z-index: 999;
   }
 
   .sidebar.open {
     transform: translateX(0);
   }
 
-  .burger-btn {
-    display: flex;
+  .sidebar-overlay.open {
+    display: block;
   }
 
-  .topbar-right .sb-avatar {
-    display: none;
+  .content {
+    padding: 24px;
   }
 }
 
-@media (max-width: 600px) {
-  .topbar h1 {
-    font-size: 20px;
+@media (max-width: 768px) {
+  .sb-logo {
+    font-size: 16px;
+    padding-bottom: 20px;
   }
-  .topbar .sub {
+
+  .sb-link {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .sb-link svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .healthy-mind-pill {
     font-size: 12px;
+    padding: 10px 12px;
+    gap: 8px;
   }
+
+  .content {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 240px;
+  }
+
+  .sb-logo {
+    font-size: 14px;
+    gap: 8px;
+  }
+
+  .sb-logo svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .sb-link {
+    padding: 8px 10px;
+    font-size: 13px;
+    gap: 8px;
+  }
+
   .content {
     padding: 16px;
   }

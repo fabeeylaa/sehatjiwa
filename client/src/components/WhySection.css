@@ -67,19 +67,20 @@
 
 .why-card {
   background: var(--surface);
-  border: 1px solid var(--mint-200);
+  border: 1px solid var(--outline-variant);
   border-radius: var(--radius-lg);
-  padding: 2.5rem 2rem;
+  padding: 2rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: all 0.3s ease;
+  box-shadow: var(--shadow-card);
 }
 
 .why-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
   border-color: var(--primary);
 }
 

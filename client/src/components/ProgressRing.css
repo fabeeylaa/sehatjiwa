@@ -1,12 +1,14 @@
 .screening-ring {
   position: relative;
-  width: 100px;
-  height: 100px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
 .screening-ring svg {
   transform: rotate(-90deg);
+  display: block;
 }
 
 .screening-progress-label {
@@ -15,8 +17,9 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: 'Poppins', sans-serif;
-  font-size: 22px;
+  font-size: clamp(1.125rem, 4vw, 1.5rem);
   font-weight: 700;
   color: var(--ink-900);
   text-align: center;
+  white-space: nowrap;
 }

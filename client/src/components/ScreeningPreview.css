@@ -57,7 +57,7 @@
 
 .assessment-card {
   background: var(--surface);
-  border: 1px solid var(--mint-200);
+  border: 1px solid var(--outline-variant);
   border-radius: var(--radius-xl);
   padding: 3rem 2.25rem;
   box-shadow: var(--shadow-card);
@@ -68,6 +68,13 @@
   gap: 2rem;
   position: relative;
   overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.assessment-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  border-color: var(--primary);
 }
 
 .assessment-card::before {

@@ -1,3 +1,4 @@
+import { ArrowUpRight, Clock, Sparkles } from 'lucide-react';
 import './ArticlesPreview.css';
 
 function ArticlesPreview() {
@@ -6,61 +7,64 @@ function ArticlesPreview() {
       category: 'Tips Kuliah',
       title: '5 Cara Mudah Kurangi Stres Saat UTS',
       readTime: '4 menit baca',
-      thumbClass: 'article-thumb--1',
+      thumbClass: 'thumb-gradient-1',
+      pattern: 'bg-pattern-1'
     },
     {
       category: 'Pola Makan',
       title: 'Makanan yang Baik untuk Kesehatan Mental',
       readTime: '5 menit baca',
-      thumbClass: 'article-thumb--2',
+      thumbClass: 'thumb-gradient-2',
+      pattern: 'bg-pattern-2'
     },
     {
       category: 'Aktivitas',
       title: 'Gerak Tubuh, Tenangkan Pikiran',
       readTime: '3 menit baca',
-      thumbClass: 'article-thumb--3',
+      thumbClass: 'thumb-gradient-3',
+      pattern: 'bg-pattern-3'
     },
   ];
 
   return (
     <section className="articles-preview" id="education">
-      <div className="articles-inner">
-        <div className="articles-text">
-          <span className="preview-label">Artikel & Edukasi</span>
+      <div className="articles-container">
+        <div className="articles-header">
+          <div className="header-badge">
+            <Sparkles size={14} className="badge-icon" />
+            <span className="preview-label">Artikel & Edukasi</span>
+          </div>
           <h2 className="preview-title">
-            Artikel yang nggak bikin<br />
-            pusing bacanya.
+            Bacaan ringan buat<br />
+            <span>pikiran tenang.</span>
           </h2>
           <p className="preview-desc">
-            Ditulis buat kehidupan mahasiswa — soal deadline, ujian, sosial,
-            dan pola hidup. Ringan, relatable, dan actionable.
+            Ditulis khusus untuk mahasiswa — soal deadline, ujian, kehidupan sosial,
+            dan pola hidup yang relate banget.
           </p>
-          <a href="/auth" className="btn btn-primary">
-            Jelajahi Artikel
+          <a href="/auth" className="btn-explore">
+            Jelajahi Semua
           </a>
         </div>
 
-        <div className="articles-visual">
-          <div className="articles-grid">
-            {articles.map((article, idx) => (
-              <article className="article-card" key={idx}>
-                <div className={`article-thumb ${article.thumbClass}`}>
-                  <span>{article.category}</span>
-                </div>
-                <div className="article-body">
-                  <span className="article-category">{article.category}</span>
-                  <h3 className="article-title">{article.title}</h3>
-                  <span className="article-readtime">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
+        <div className="articles-grid">
+          {articles.map((article, idx) => (
+            <article className="pro-article-card" key={idx}>
+              <div className={`pro-article-thumb ${article.thumbClass}`}>
+                <div className={`pro-thumb-overlay ${article.pattern}`}></div>
+                <div className="pro-category-tag">{article.category}</div>
+              </div>
+              <div className="pro-article-content">
+                <h3 className="pro-article-title">{article.title}</h3>
+                <div className="pro-article-footer">
+                  <span className="pro-readtime">
+                    <Clock size={14} />
                     {article.readTime}
                   </span>
                 </div>
-              </article>
-            ))}
-          </div>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>

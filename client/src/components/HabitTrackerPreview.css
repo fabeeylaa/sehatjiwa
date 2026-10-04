@@ -62,7 +62,7 @@
 
 .chart-card {
   background: var(--surface);
-  border: 1px solid var(--mint-200);
+  border: 1px solid var(--outline-variant);
   border-radius: var(--radius-xl);
   padding: 1.75rem;
   box-shadow: var(--shadow-card);
@@ -71,7 +71,8 @@
 
 .chart-card:hover {
   box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  border-color: var(--primary);
 }
 
 .chart-streak-chip {

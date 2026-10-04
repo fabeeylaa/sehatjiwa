@@ -1,53 +1,100 @@
+import { BookOpen } from 'lucide-react';
 import './Articles.css';
 
 function Articles() {
-  const articles = [
+  const heroArticle = {
+    tag: 'Nutrisi',
+    title: 'Panduan Lengkap Memulai Pola Makan Sehat Harian',
+    excerpt: 'Pelajari langkah-langkah praktis dan sederhana untuk mengubah kebiasaan makan Anda menjadi lebih bernutrisi tanpa mengorbankan rasa. Dari persiapan bahan hingga penyajian.',
+    readTime: '5 menit baca',
+    pattern: 'bg-pattern-hero'
+  };
+
+  const latestArticles = [
     {
-      tag: 'Tips Kesehatan',
-      title: '5 Cara Mudah Kurangi Stres Saat UTS',
-      excerpt: 'Ditulis buat kamu yang lagi stress menghadapi ujian. Dijamin nggak pake ribet.',
+      tag: 'Mental',
+      title: '5 Teknik Relaksasi Cepat di Tengah Jam Kerja',
+      excerpt: 'Metode pernapasan dan peregangan singkat yang terbukti mengurangi tingkat stres saat menghadapi tekanan tinggi.',
+      readTime: '3 menit baca',
+      pattern: 'bg-pattern-1'
     },
     {
-      tag: 'Pola Makan',
-      title: 'Makanan yang Baik untuk Kesehatan Mental',
-      excerpt: 'Apa yang kamu makan bisa mempengaruhi mood dan energi. Simak rekomendasinya.',
+      tag: 'Kebugaran',
+      title: 'Latihan Ringan di Rumah Tanpa Alat Khusus',
+      excerpt: 'Panduan gerakan fungsional sehari-hari menggunakan berat badan sendiri untuk menjaga kebugaran.',
+      readTime: '7 menit baca',
+      pattern: 'bg-pattern-3'
     },
     {
-      tag: 'Aktivitas',
-      title: 'Gerak Tubuh, Tenangkan Pikiran',
-      excerpt: 'Kaitan antara olahraga ringan dan kesehatan mental yang sering diabaikan.',
-    },
+      tag: 'Kesehatan Umum',
+      title: 'Menjaga Kesehatan Mental di Tengah Kesibukan',
+      excerpt: 'Kesehatan mental sama pentingnya dengan kesehatan fisik. Temukan cara menjaga keseimbangannya.',
+      readTime: '4 menit baca',
+      pattern: 'bg-pattern-2'
+    }
   ];
 
   return (
-    <section className="articles" id="articles">
+    <section className="articles-page" id="articles">
       <div className="container">
-        <div className="articles-header">
-          <h2>Artikel & Edukasi</h2>
-          <p>Insight seputar kesehatan mental dan kebiasaan sehat untuk kehidupan mahasiswa</p>
+        
+        <div className="articles-page-header">
+          <div className="header-badge">
+            <BookOpen size={14} className="badge-icon" />
+            <span className="preview-label">Koleksi Artikel</span>
+          </div>
+          <h2>Insight & Edukasi</h2>
+          <p>Temukan panduan, tips, dan wawasan terbaru untuk menjaga kesehatan fisik dan mental Anda setiap hari.</p>
         </div>
 
-        <div className="articles-grid">
-          {articles.map((article, i) => (
-            <article className="article-card" key={i}>
-              <div className="article-thumbnail">
-                <span>{article.tag}</span>
-              </div>
-              <div className="article-content">
-                <span className="article-tag">{article.tag}</span>
-                <h3>{article.title}</h3>
-                <p>{article.excerpt}</p>
-                <a href="#" className="article-link">
-                  Baca Selengkapnya
-                </a>
-              </div>
-            </article>
-          ))}
+        <nav className="articles-tabs" role="tablist">
+          <button className="tab-btn active" role="tab">Semua</button>
+          <button className="tab-btn" role="tab">Nutrisi</button>
+          <button className="tab-btn" role="tab">Mental</button>
+          <button className="tab-btn" role="tab">Kebugaran</button>
+        </nav>
+
+        <div className="sec-title">
+          <h3>Pilihan Editor</h3>
+        </div>
+        
+        <article className="hero-article-card">
+          <div className="hero-article-text">
+            <p className="article-meta">{heroArticle.tag} <i>· {heroArticle.readTime}</i></p>
+            <h3>{heroArticle.title}</h3>
+            <p className="hero-excerpt">{heroArticle.excerpt}</p>
+            <a className="btn-read-more" href="#">Baca Selengkapnya</a>
+          </div>
+          <div className={`hero-article-thumb ${heroArticle.pattern}`}></div>
+        </article>
+
+        <div className="sec-title flex-between">
+          <h3>Artikel Terbaru</h3>
+          <a className="more-link" href="#">Lihat Semua</a>
         </div>
 
-        <div className="articles-cta">
-          <a href="#" className="btn btn-outline">Lihat Semua Artikel</a>
+        <div className="latest-articles-grid">
+          <a className="latest-card-big pro-card" href="#">
+            <div className={`latest-thumb ${latestArticles[0].pattern}`}></div>
+            <p className="article-meta">{latestArticles[0].tag} <i>· {latestArticles[0].readTime}</i></p>
+            <h4>{latestArticles[0].title}</h4>
+            <p className="article-excerpt">{latestArticles[0].excerpt}</p>
+          </a>
+          
+          <div className="latest-articles-stack">
+            {latestArticles.slice(1).map((article, idx) => (
+              <a className="latest-card-row pro-card" href="#" key={idx}>
+                <div className={`latest-thumb-small ${article.pattern}`}></div>
+                <div className="latest-card-content">
+                  <p className="article-meta">{article.tag} <i>· {article.readTime}</i></p>
+                  <h4>{article.title}</h4>
+                  <p className="article-excerpt">{article.excerpt}</p>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
+
       </div>
     </section>
   );
