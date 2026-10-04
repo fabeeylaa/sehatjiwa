@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Bookmark, BookmarkCheck, ChevronLeft, BookOpen, Heart, Share2, MessageSquare } from 'lucide-react';
 import './UserArticleDetail.css';
+import './UserArticleDetailPolish.css';
 
 function UserArticleDetail() {
   const { slug } = useParams();

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './DashboardLayout.css';
 import logoSehatJiwa from '../assets/Logoosehatjiwa.jpeg';
@@ -6,18 +6,31 @@ import logoSehatJiwa from '../assets/Logoosehatjiwa.jpeg';
 function DashboardLayout({ user, children, menuItems }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const overlayRef = useRef(null);
 
   const activeSection = menuItems.filter(item => location.pathname === item.path || location.pathname.startsWith(item.path + '/')).sort((a, b) => b.path.length - a.path.length)[0] || menuItems[0];
   const profilePath = user?.role === 'admin' ? '/admin/profile' : '/dashboard/profile';
   const isProfile = location.pathname === profilePath;
 
+  // id aktif tunggal supaya tombol Profil ikut punya indikator
+  const activeId = isProfile ? 'profile' : activeSection.id;
+
+  const linkRefs = useRef({});
+  const [indicator, setIndicator] = useState(null);
+
+  useLayoutEffect(() => {
+    const el = linkRefs.current[activeId];
+    if (el) setIndicator({ top: el.offsetTop, height: el.offsetHeight });
+  }, [activeId, location.pathname]);
+
+  // posisi meleset kalau window di-resize tanpa pindah halaman
   useEffect(() => {
-    const overlay = overlayRef.current;
-    if (!overlay) return;
-    const onOverlayClick = () => navigate(location.pathname, { state: { closeSidebar: true } });
-    // simpler: toggle via class on click handled inline; keep focus behavior minimal
-  }, [navigate, location]);
+    const onResize = () => {
+      const el = linkRefs.current[activeId];
+      if (el) setIndicator({ top: el.offsetTop, height: el.offsetHeight });
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [activeId]);
 
   return (
     <div className="shell">
@@ -31,11 +44,20 @@ function DashboardLayout({ user, children, menuItems }) {
           <span>SehatJiwa</span>
         </div>
         <nav className="sb-nav" aria-label="Navigasi dashboard">
+          {indicator && (
+            <span
+              className="sb-indicator"
+              aria-hidden="true"
+              style={{ transform: `translateY(${indicator.top}px)`, height: indicator.height }}
+            />
+          )}
+
           {menuItems.map(item => (
             <button
               key={item.id}
-              className={`sb-link ${!isProfile && activeSection.id === item.id ? 'active' : ''}`}
-              aria-current={!isProfile && activeSection.id === item.id ? 'page' : undefined}
+              ref={(el) => { linkRefs.current[item.id] = el; }}
+              className={`sb-link ${activeId === item.id ? 'active' : ''}`}
+              aria-current={activeId === item.id ? 'page' : undefined}
               onClick={() => {
                 navigate(item.path);
                 document.querySelector('.sidebar')?.classList.remove('open');
@@ -45,10 +67,16 @@ function DashboardLayout({ user, children, menuItems }) {
               <span>{item.label}</span>
             </button>
           ))}
-          <button className={`sb-link ${isProfile ? 'active' : ''}`} aria-current={isProfile ? 'page' : undefined} onClick={() => {
+
+          <button
+            ref={(el) => { linkRefs.current.profile = el; }}
+            className={`sb-link ${activeId === 'profile' ? 'active' : ''}`}
+            aria-current={activeId === 'profile' ? 'page' : undefined}
+            onClick={() => {
               navigate(profilePath);
               document.querySelector('.sidebar')?.classList.remove('open');
-            }}>
+            }}
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <span>Profil</span>
           </button>
@@ -77,7 +105,7 @@ function DashboardLayout({ user, children, menuItems }) {
             <span>{isProfile ? 'Profil' : activeSection.label}</span>
           </div>
         </div>
-        <div className="content">
+        <div className="content" key={location.pathname}>
           {children}
         </div>
       </main>

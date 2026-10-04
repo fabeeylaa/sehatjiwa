@@ -4,6 +4,7 @@ import './UserSocial.css';
 import './ChallengeNew.css';
 import './FriendsNew.css';
 import './LeaderboardNew.css';
+import './UserSocialPolish.css';
 import { Flame, Check, CalendarDays, Users, Plus, X, Clock, Trophy, Brain, Moon, Apple, Dumbbell, Bell, UserPlus, Send } from 'lucide-react';
 
 function Leaderboard() {

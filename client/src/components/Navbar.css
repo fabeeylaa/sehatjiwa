@@ -16,7 +16,7 @@
 }
 
 .navbar-logo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.6rem;
   font-family: 'Poppins', sans-serif;
@@ -24,12 +24,17 @@
   font-size: 1.35rem;
   color: var(--on-surface);
   letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.navbar-logo svg {
-  width: 28px;
-  height: 28px;
-  fill: var(--primary);
+.navbar-logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #fff;
 }
 
 .navbar-menu {
@@ -44,10 +49,26 @@
   font-weight: 500;
   color: var(--on-surface-variant);
   transition: color 0.2s ease;
+  text-decoration: none;
+  position: relative;
 }
 
-.navbar-menu a:hover {
-  color: var(--primary);
+.navbar-menu a:hover { color: var(--primary); }
+.navbar-menu a.active { color: var(--primary); font-weight: 600; }
+.navbar-menu a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0; right: 0;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 3px 3px 0 0;
+  animation: ci-nav-underline .3s ease-out;
+}
+
+@keyframes ci-nav-underline {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
 }
 
 .navbar .navbar-cta {

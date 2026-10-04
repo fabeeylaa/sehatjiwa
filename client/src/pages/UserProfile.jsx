@@ -12,6 +12,7 @@ import {
   Flame,
 } from 'lucide-react';
 import './UserProfile.css';
+import './UserProfilePolish.css';
 
 const getJson = (url) =>
   fetch(url, { credentials: 'include' })

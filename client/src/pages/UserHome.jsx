@@ -103,7 +103,7 @@ function UserHome({ user }) {
           <div className="bottom-head">
             <h3>Aktivitas Mingguan</h3>
             <button className="see-all" onClick={() => navigate('/dashboard/habits')}>
-              Lihat Semua <span>&rarr;</span>
+              Lihat Semua
             </button>
           </div>
           <div className="activity-chart">

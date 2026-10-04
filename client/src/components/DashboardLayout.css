@@ -57,6 +57,22 @@
   flex-direction: column;
   gap: 8px;
   flex: 1;
+  position: relative;
+}
+
+/* Pill aktif yang meluncur saat pindah feature */
+.sb-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  border-radius: 14px;
+  background: #a6f699;
+  pointer-events: none;
+  z-index: 0;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sb-link {
@@ -73,6 +89,8 @@
   background: none;
   width: 100%;
   text-align: left;
+  position: relative;
+  z-index: 1;
   transition: all 0.2s ease;
 }
 
@@ -89,9 +107,19 @@
 }
 
 .sb-link.active {
-  background: #a6f699; /* Light green from the image */
+  background: none;
   color: var(--forest-deep);
   box-shadow: none;
+}
+
+.sb-link.active:hover {
+  background: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-indicator {
+    transition: none;
+  }
 }
 
 .sb-foot {
@@ -152,6 +180,25 @@
   padding: 40px;
   flex: 1;
   background: var(--surface-bright);
+  /* di-remount tiap pindah route (key=pathname), jadi animasi ini replay */
+  animation: sbx-content 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes sbx-content {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    animation: none;
+  }
 }
 
 /* MOBILE TOPBAR */

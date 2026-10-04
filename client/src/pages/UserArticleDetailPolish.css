@@ -1,0 +1,65 @@
+/* Polesan Detail Artikel (menyasar class ad- bawaan) */
+@keyframes adx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.article-detail-page .ad-header,
+.article-detail-page .ad-cover,
+.article-detail-page .ad-meta-top,
+.article-detail-page .ad-title,
+.article-detail-page .ad-publish-date,
+.article-detail-page .ad-actions-card,
+.article-detail-page .ad-related-card {
+  animation: adx-rise 0.5s ease backwards;
+}
+
+.article-detail-page .ad-cover {
+  animation-delay: 0.06s;
+}
+
+.article-detail-page .ad-meta-top {
+  animation-delay: 0.12s;
+}
+
+.article-detail-page .ad-title {
+  animation-delay: 0.16s;
+}
+
+.article-detail-page .ad-publish-date {
+  animation-delay: 0.2s;
+}
+
+.article-detail-page .ad-actions-card {
+  animation-delay: 0.24s;
+}
+
+.article-detail-page .ad-related-card {
+  animation-delay: 0.3s;
+}
+
+.article-detail-page .ad-related-item {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.article-detail-page .ad-related-item:hover {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-detail-page .ad-header,
+  .article-detail-page .ad-cover,
+  .article-detail-page .ad-meta-top,
+  .article-detail-page .ad-title,
+  .article-detail-page .ad-publish-date,
+  .article-detail-page .ad-actions-card,
+  .article-detail-page .ad-related-card {
+    animation: none;
+  }
+}

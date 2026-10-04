@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, X, AlertCircle, Apple, Brain, Activity, Heart } from 'lucide-react';
 import '../pages/Dashboard.css';
+import './UserArticlesPolish.css';
 
 function UserArticles() {
   const [articles, setArticles] = useState([]);

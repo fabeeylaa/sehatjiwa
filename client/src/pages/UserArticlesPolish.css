@@ -1,0 +1,51 @@
+/* Polesan halaman Artikel (class edux- untuk keyframe, menyasar class bawaan) */
+@keyframes edux-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.tab-panel .edu-head,
+.tab-panel .edu-tabs,
+.tab-panel .edu-hero,
+.tab-panel .edu-card-v2 {
+  animation: edux-rise 0.5s ease backwards;
+}
+
+.tab-panel .edu-tabs {
+  animation-delay: 0.06s;
+}
+
+.tab-panel .edu-hero {
+  animation-delay: 0.12s;
+}
+
+.tab-panel .edu-latest .edu-card-v2.big {
+  animation-delay: 0.2s;
+}
+
+.tab-panel .edu-stack .edu-card-v2.row:nth-child(1) {
+  animation-delay: 0.26s;
+}
+
+.tab-panel .edu-stack .edu-card-v2.row:nth-child(2) {
+  animation-delay: 0.32s;
+}
+
+.tab-panel .edu-stack .edu-card-v2.row:nth-child(3) {
+  animation-delay: 0.38s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-panel .edu-head,
+  .tab-panel .edu-tabs,
+  .tab-panel .edu-hero,
+  .tab-panel .edu-card-v2 {
+    animation: none;
+  }
+}
