@@ -247,7 +247,7 @@ function Challenges() {
     fetch('/api/social/challenges', { credentials: 'include' })
       .then(async (res) => {
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Gagal memuat tantangan');
+        if (!res.ok) throw new Error(data.message || 'Gagal memuat challenge');
         setItems(Array.isArray(data) ? data : []);
       })
       .catch((err) => setError(err.message))
@@ -282,8 +282,8 @@ function Challenges() {
         body: JSON.stringify(body),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Gagal membuat tantangan');
-      setInfo('Tantangan berhasil dibuat.');
+      if (!res.ok) throw new Error(data.message || 'Gagal membuat challenge');
+      setInfo('Challenge berhasil dibuat.');
       setForm({ ...form, title: '', description: '', max_participants: '' });
       load();
     } catch (err) {
@@ -302,8 +302,8 @@ function Challenges() {
         credentials: 'include',
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Gagal ikut tantangan');
-      setInfo('Kamu berhasil ikut tantangan.');
+      if (!res.ok) throw new Error(data.message || 'Gagal ikut challenge');
+      setInfo('Kamu berhasil ikut challenge.');
       load();
     } catch (err) {
       setError(err.message);
@@ -316,14 +316,14 @@ function Challenges() {
   return (
     <>
       <div className="card">
-        <h3>Buat Tantangan</h3>
+        <h3>Buat Challenge</h3>
         <p className="hint">Ajak orang lain membangun kebiasaan bersama</p>
         <form onSubmit={createChallenge} className="soc-grid">
           <input
             className="soc-input"
             type="text"
             maxLength={200}
-            placeholder="Judul tantangan"
+            placeholder="Judul challenge"
             value={form.title}
             onChange={setField('title')}
           />
@@ -365,7 +365,7 @@ function Challenges() {
             className="btn btn-primary soc-wide"
             disabled={!canSubmit}
           >
-            {saving ? 'Menyimpan...' : 'Buat Tantangan'}
+            {saving ? 'Menyimpan...' : 'Buat Challenge'}
           </button>
         </form>
         {error && <div className="soc-error">{error}</div>}
@@ -373,11 +373,11 @@ function Challenges() {
       </div>
 
       <div className="card" style={{ marginTop: '16px' }}>
-        <h3>Daftar Tantangan</h3>
+        <h3>Daftar Challenge</h3>
         {loading && <p className="hint">Memuat...</p>}
         {!loading && items.length === 0 && (
           <p style={{ color: 'var(--on-surface-variant)' }}>
-            Belum ada tantangan. Buat yang pertama!
+            Belum ada challenge. Buat yang pertama!
           </p>
         )}
         {items.map((c) => (
@@ -437,7 +437,7 @@ function UserSocial() {
           className={`btn ${tab === 'challenges' ? 'btn-primary' : 'btn-ghost'}`}
           onClick={() => setTab('challenges')}
         >
-          Tantangan
+          Challenge
         </button>
       </div>
 
