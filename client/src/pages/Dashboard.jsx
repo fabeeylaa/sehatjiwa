@@ -6,6 +6,7 @@ import UserScreening from './UserScreening';
 import UserHabits from './UserHabits';
 import UserArticles from './UserArticles';
 import UserArticleDetail from './UserArticleDetail';
+import UserSocial from './UserSocial';
 import AdminOverview from './AdminOverview';
 import AdminArticles from './AdminArticles';
 import AdminAssessments from './AdminAssessments';
@@ -79,6 +80,13 @@ function Dashboard({ role }) {
       sub: 'Bacaan kesehatan mental.',
       icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
     },
+    {
+      id: 'social',
+      label: 'Sosial',
+      path: '/dashboard/social',
+      sub: 'Teman, tantangan, dan leaderboard.',
+      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a5 5 0 015-5h2a5 5 0 015 5v1"/><path d="M16 5a3 3 0 010 6M21 20v-1a4 4 0 00-3-3.9"/></svg>
+    },
   ];
 
   return (
@@ -98,6 +106,7 @@ function Dashboard({ role }) {
             <Route path="/habits" element={<UserHabits />} />
             <Route path="/articles" element={<UserArticles />} />
             <Route path="/articles/:slug" element={<UserArticleDetail />} />
+            <Route path="/social" element={<UserSocial />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </>
         )}

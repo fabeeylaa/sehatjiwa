@@ -7,7 +7,7 @@ function DashboardLayout({ user, children, menuItems }) {
   const location = useLocation();
   const overlayRef = useRef(null);
 
-  const activeSection = menuItems.find(item => location.pathname === item.path || location.pathname.startsWith(item.path + '/')) || menuItems[0];
+  const activeSection = menuItems.filter(item => location.pathname === item.path || location.pathname.startsWith(item.path + '/')).sort((a, b) => b.path.length - a.path.length)[0] || menuItems[0];
 
   useEffect(() => {
     const overlay = overlayRef.current;
