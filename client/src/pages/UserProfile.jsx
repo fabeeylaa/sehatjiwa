@@ -10,6 +10,9 @@ import {
   Leaf,
   Sparkles,
   Flame,
+  Camera,
+  Save,
+  AtSign,
 } from 'lucide-react';
 import './UserProfile.css';
 import './UserProfilePolish.css';
@@ -27,8 +30,48 @@ function UserProfile({ user }) {
   const [latest, setLatest] = useState(null);
   const [streak, setStreak] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [name, setName] = useState(user.name);
+  const [username, setUsername] = useState(user.username || '');
+  const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(user.avatar_url || null);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
 
   const isAdmin = user.role === 'admin';
+
+  const resetForm = () => {
+    setName(user.name);
+    setUsername(user.username || '');
+    setAvatar(null);
+    setMessage('');
+  };
+
+  const handleSaveProfile = async () => {
+    setSaving(true);
+    setMessage('');
+    try {
+      const fd = new FormData();
+      fd.append('name', name);
+      fd.append('username', username);
+      if (avatar) fd.append('avatar', avatar);
+
+      const res = await fetch('/api/auth/profile', { method: 'PUT', body: fd, credentials: 'include' });
+      const data = await res.json();
+      if (!res.ok) {
+        setMessage(data.message || 'Gagal menyimpan profil');
+        return;
+      }
+      if (data.user.avatar_url) setAvatarPreview(data.user.avatar_url);
+      setAvatar(null);
+      setIsEditing(false);
+      setMessage('Profil berhasil disimpan');
+    } catch {
+      setMessage('Gagal menyimpan profil');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   useEffect(() => {
     if (isAdmin) return;
@@ -61,11 +104,12 @@ function UserProfile({ user }) {
     }
   };
 
-  const initial = (user.name || '?').charAt(0).toUpperCase();
+  const initial = (name || '?').charAt(0).toUpperCase();
   const roleLabel = isAdmin ? 'Admin' : 'Pengguna';
 
   const items = [
-    { icon: <User size={20} />, label: 'Nama', value: user.name },
+    { icon: <User size={20} />, label: 'Nama', value: name },
+    { icon: <AtSign size={20} />, label: 'Username', value: `@${username || '-'}` },
     { icon: <Mail size={20} />, label: 'Email', value: user.email },
     { icon: <ShieldCheck size={20} />, label: 'Peran', value: roleLabel },
   ];
@@ -92,21 +136,74 @@ function UserProfile({ user }) {
       </div>
 
       <div className="prof-body">
-        <div className="prof-avatar">{initial}</div>
-        <h2 className="prof-name">{user.name}</h2>
+        <div className="prof-avatar">
+          {avatarPreview ? (
+            <img 
+              src={avatarPreview} 
+              alt="Foto profil" 
+              style={{width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover'}} 
+              onError={() => setAvatarPreview(null)}
+            />
+          ) : initial}
+        </div>
+        <h2 className="prof-name">{name}</h2>
         <span className="prof-badge">{roleLabel}</span>
 
-        <div className="prof-grid">
-          {items.map((it) => (
-            <div className="prof-tile" key={it.label}>
-              <div className="prof-tile-icon">{it.icon}</div>
-              <div className="prof-tile-text">
-                <span className="prof-tile-label">{it.label}</span>
-                <span className="prof-tile-value">{it.value}</span>
-              </div>
+        {isEditing ? (
+          <section className="prof-edit-form">
+            <label className="prof-avatar-btn" htmlFor="avatar-input">
+              <Camera size={14} /> Ganti Foto Profil
+              <input
+                id="avatar-input"
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (!file) return;
+                  setAvatar(file);
+                  setAvatarPreview(URL.createObjectURL(file));
+                }}
+              />
+            </label>
+            <label className="prof-field">
+              <span>Nama</span>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
+            </label>
+            <label className="prof-field">
+              <span>Username</span>
+              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} maxLength={50} />
+              <small>Dipakai untuk menambahkan teman (@username). Harus unik.</small>
+            </label>
+            <div className="prof-form-actions">
+              <button className="btn btn-primary" onClick={handleSaveProfile} disabled={saving || !name.trim() || !username.trim()}>
+                <Save size={18} /> {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+              <button className="btn btn-ghost" onClick={() => { resetForm(); setIsEditing(false); }} disabled={saving}>
+                Batal
+              </button>
             </div>
-          ))}
-        </div>
+            {message && <p className="prof-edit-msg">{message}</p>}
+          </section>
+        ) : (
+          <>
+            <div className="prof-grid">
+              {items.map((it) => (
+                <div className="prof-tile" key={it.label}>
+                  <div className="prof-tile-icon">{it.icon}</div>
+                  <div className="prof-tile-text">
+                    <span className="prof-tile-label">{it.label}</span>
+                    <span className="prof-tile-value">{it.value}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {message && <p className="prof-edit-msg">{message}</p>}
+            <button className="btn btn-primary prof-edit-btn" onClick={() => setIsEditing(true)}>
+              <Camera size={18} /> Edit Profil
+            </button>
+          </>
+        )}
 
         {!isAdmin && (
           <section className="prof-stats">

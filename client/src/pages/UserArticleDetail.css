@@ -111,9 +111,9 @@
 
 .ad-content-body > p:first-of-type::first-letter {
   float: left;
-  font-size: 4rem;
-  line-height: 4rem;
-  padding-right: 0.75rem;
+  font-size: 3.25rem;
+  line-height: 3.25rem;
+  padding-right: 0.25rem;
   padding-top: 0.25rem;
   color: #556056;
   font-weight: 400;

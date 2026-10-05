@@ -23,7 +23,7 @@ export const getLeaderboard = async (req, res) => {
     }
 
     const usersResult = await pool.query(
-      `SELECT u.id, u.name, u.username FROM users u ${userFilter}`,
+      `SELECT u.id, u.name, u.username, u.avatar_url FROM users u ${userFilter}`,
       params,
     );
 
@@ -47,6 +47,7 @@ export const getLeaderboard = async (req, res) => {
         user_id: u.id,
         name: u.name,
         username: u.username,
+        avatar_url: u.avatar_url,
         current_streak: streak,
         total_habits_completed: totalCompleted,
         is_me: u.id === userId,

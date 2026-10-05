@@ -53,10 +53,20 @@ function UserArticleDetail() {
 
   const handleShare = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      alert('Link artikel disalin!');
+      if (navigator.share) {
+        await navigator.share({
+          title: article.title,
+          text: article.excerpt || article.title,
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link artikel disalin ke clipboard!');
+      }
     } catch (err) {
-      console.error('Gagal menyalin:', err);
+      if (err.name !== 'AbortError') {
+        console.error('Gagal membagikan:', err);
+      }
     }
   };
 

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, X, AlertCircle, Apple, Brain, Activity, Heart } from 'lucide-react';
+import { Search, X, AlertCircle, Apple, Brain, Activity, Heart, BookmarkCheck } from 'lucide-react';
 import '../pages/Dashboard.css';
 import './UserArticlesPolish.css';
 
@@ -11,7 +11,7 @@ function UserArticles() {
   const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const categories = ['Semua', 'Nutrisi', 'Mental', 'Kebugaran', 'Kesehatan Umum'];
+  const categories = ['Semua', 'Nutrisi', 'Mental', 'Kebugaran', 'Kesehatan Umum', 'Tersimpan'];
 
   const getCategoryConfig = (cat) => {
     switch(cat) {
@@ -61,11 +61,15 @@ function UserArticles() {
   const displayArticles = useMemo(() => {
     let source = articles.length > 0 ? articles : dummyArticles;
     return source.filter(a => {
-      const mCat = selectedCategory === 'Semua' || a.category === selectedCategory;
+      const mCat = selectedCategory === 'Semua' 
+        ? true 
+        : selectedCategory === 'Tersimpan' 
+          ? bookmarks.has(a.id) 
+          : a.category === selectedCategory;
       const mSearch = searchQuery.trim() === '' || a.title.toLowerCase().includes(searchQuery.toLowerCase()) || (a.excerpt && a.excerpt.toLowerCase().includes(searchQuery.toLowerCase()));
       return mCat && mSearch;
     });
-  }, [articles, selectedCategory, searchQuery, dummyArticles]);
+  }, [articles, bookmarks, selectedCategory, searchQuery, dummyArticles]);
 
   if (loading) return <div className="tab-panel" style={{ padding: '24px' }}>Memuat...</div>;
 
@@ -96,9 +100,19 @@ function UserArticles() {
 
       {displayArticles.length === 0 ? (
         <div className="card" style={{ textAlign: 'center', padding: '60px 24px' }}>
-          <AlertCircle size={48} style={{ margin: '0 auto 16px', color: 'var(--gold)' }} />
-          <h3>Tidak ada artikel cocok</h3>
-          <button className="btn btn-ghost" onClick={() => { setSearchQuery(''); setSelectedCategory('Semua'); }}>Reset Filter</button>
+          {selectedCategory === 'Tersimpan' ? (
+            <>
+              <BookmarkCheck size={48} style={{ margin: '0 auto 16px', color: 'var(--primary)' }} />
+              <h3>Belum ada artikel tersimpan</h3>
+              <button className="btn btn-ghost" onClick={() => setSelectedCategory('Semua')}>Jelajahi Artikel</button>
+            </>
+          ) : (
+            <>
+              <AlertCircle size={48} style={{ margin: '0 auto 16px', color: 'var(--gold)' }} />
+              <h3>Tidak ada artikel cocok</h3>
+              <button className="btn btn-ghost" onClick={() => { setSearchQuery(''); setSelectedCategory('Semua'); }}>Reset Filter</button>
+            </>
+          )}
         </div>
       ) : (
         <>
