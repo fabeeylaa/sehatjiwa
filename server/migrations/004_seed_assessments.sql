@@ -87,12 +87,12 @@ INSERT INTO assessments (code, title, instruction, source) VALUES
  'Instrumen internal tim (bukan alat diagnosis klinis)');
 
 INSERT INTO assessment_questions (assessment_id, question_text, order_number, is_sensitive) VALUES
-(3, 'Seberapa sering kamu merasa sulit tidur atau tidur nggak nyenyak?', 1, false),
+(3, 'Seberapa sering kamu merasa sulit tidur atau insomnia?', 1, false),
 (3, 'Seberapa sering kamu merasa kewalahan dengan tugas kuliah/deadline?', 2, false),
-(3, 'Seberapa sering kamu melewatkan waktu makan karena sibuk atau nggak nafsu makan?', 3, false),
-(3, 'Seberapa sering kamu merasa nggak sempat olahraga atau gerak badan?', 4, false),
-(3, 'Seberapa sering kamu merasa capek/lemas meskipun udah istirahat?', 5, false),
-(3, 'Seberapa sering kamu menghindari ngobrol/kumpul sama teman karena males atau capek duluan?', 6, false),
+(3, 'Seberapa sering kamu melewatkan waktu makan karena sibuk atau tidak nafsu makan?', 3, false),
+(3, 'Seberapa sering kamu merasa tidak sempat olahraga atau gerak badan?', 4, false),
+(3, 'Seberapa sering kamu merasa capek/lemas meskipun sudah istirahat?', 5, false),
+(3, 'Seberapa sering kamu menghindari ngobrol/kumpul sama teman karena malas atau capek duluan?', 6, false),
 (3, 'Seberapa sering kamu merasa susah rileks atau susah "mematikan" pikiran soal tugas?', 7, false);
 
 INSERT INTO assessment_options (question_id, option_text, score_value, order_number)
