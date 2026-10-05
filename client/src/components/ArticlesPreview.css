@@ -1,0 +1,287 @@
+/* ArticlesPreview.css - Redesign */
+.articles-preview {
+  background-color: var(--surface-bright);
+  padding: var(--space-2xl) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle background accent */
+.articles-preview::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(circle, var(--mint-200) 0%, transparent 70%);
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.articles-container {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 4rem;
+  align-items: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  position: relative;
+  z-index: 1;
+}
+
+.articles-header {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--mint-200);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.05);
+}
+
+.badge-icon {
+  color: var(--primary);
+}
+
+.preview-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+}
+
+.preview-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--ink-900);
+  margin-bottom: 1.25rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.preview-title span {
+  color: var(--primary);
+}
+
+.preview-desc {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.125rem;
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  max-width: 90%;
+}
+
+.btn-explore {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-pill);
+  background: var(--ink-900);
+  color: white;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.btn-explore:hover {
+  background: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.25);
+}
+
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+/* Make the first card span 2 columns on desktop for a Bento grid look */
+.pro-article-card:nth-child(1) {
+  grid-column: span 2;
+  flex-direction: row;
+}
+
+.pro-article-card:nth-child(1) .pro-article-thumb {
+  width: 50%;
+  aspect-ratio: auto;
+}
+
+.pro-article-card {
+  background: var(--surface);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  position: relative;
+}
+
+.pro-article-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.08);
+  border-color: var(--mint-200);
+}
+
+.pro-article-thumb {
+  position: relative;
+  aspect-ratio: 16/10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 1.25rem;
+  overflow: hidden;
+}
+
+.thumb-gradient-1 { background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); }
+.thumb-gradient-2 { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); }
+.thumb-gradient-3 { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
+
+.pro-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0.6;
+  mix-blend-mode: overlay;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.6s ease;
+}
+
+.pro-article-card:hover .pro-thumb-overlay {
+  transform: scale(1.05);
+}
+
+/* Beautiful mesh gradient emulation */
+.bg-pattern-1 { background-image: radial-gradient(circle at 10% 20%, rgb(34, 197, 94) 0%, rgb(20, 83, 45) 90%); }
+.bg-pattern-2 { background-image: radial-gradient(circle at 10% 20%, rgb(59, 130, 246) 0%, rgb(30, 58, 138) 81.3%); }
+.bg-pattern-3 { background-image: radial-gradient(circle at 10% 20%, rgb(249, 115, 22) 0%, rgb(154, 52, 18) 72.4%); }
+
+
+.pro-category-tag {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-pill);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-900);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.pro-article-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.pro-article-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ink-900);
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pro-article-card:nth-child(1) .pro-article-title {
+  font-size: 1.35rem;
+}
+
+.pro-article-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.pro-readtime {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.pro-article-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-900);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pro-article-card:hover .pro-article-action {
+  background: var(--primary);
+  color: white;
+  transform: rotate(45deg);
+}
+
+@media (max-width: 1024px) {
+  .articles-container {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .articles-header {
+    align-items: center;
+    text-align: center;
+  }
+  
+  .preview-desc {
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pro-article-card:nth-child(1) {
+    grid-column: span 1;
+    flex-direction: column;
+  }
+  
+  .pro-article-card:nth-child(1) .pro-article-thumb {
+    width: 100%;
+    aspect-ratio: 16/10;
+  }
+  
+  .articles-grid {
+    grid-template-columns: 1fr;
+  }
+}

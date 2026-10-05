@@ -1,0 +1,88 @@
+/* Polesan halaman Profil (menyasar class prof- bawaan) */
+@keyframes profx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes profx-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.prof-cover {
+  animation: profx-rise 0.5s ease backwards;
+}
+
+.prof-avatar {
+  animation: profx-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+}
+
+.prof-name {
+  animation: profx-rise 0.5s ease 0.16s backwards;
+}
+
+.prof-badge {
+  animation: profx-rise 0.5s ease 0.2s backwards;
+}
+
+.prof-tile {
+  animation: profx-rise 0.5s ease backwards;
+}
+
+.prof-tile:nth-child(1) { animation-delay: 0.24s; }
+.prof-tile:nth-child(2) { animation-delay: 0.3s; }
+.prof-tile:nth-child(3) { animation-delay: 0.36s; }
+
+.prof-stats {
+  animation: profx-rise 0.5s ease 0.4s backwards;
+}
+
+.prof-stat {
+  animation: profx-rise 0.5s ease backwards;
+}
+
+.prof-stat:nth-child(1) { animation-delay: 0.46s; }
+.prof-stat:nth-child(2) { animation-delay: 0.52s; }
+.prof-stat:nth-child(3) { animation-delay: 0.58s; }
+
+.prof-logout {
+  animation: profx-rise 0.5s ease 0.64s backwards;
+}
+
+.prof-bar-col {
+  animation: profx-rise 0.45s ease backwards;
+}
+
+.prof-bar-col:nth-child(1) { animation-delay: 0.62s; }
+.prof-bar-col:nth-child(2) { animation-delay: 0.66s; }
+.prof-bar-col:nth-child(3) { animation-delay: 0.7s; }
+.prof-bar-col:nth-child(4) { animation-delay: 0.74s; }
+.prof-bar-col:nth-child(5) { animation-delay: 0.78s; }
+.prof-bar-col:nth-child(6) { animation-delay: 0.82s; }
+.prof-bar-col:nth-child(7) { animation-delay: 0.86s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .prof-cover,
+  .prof-avatar,
+  .prof-name,
+  .prof-badge,
+  .prof-tile,
+  .prof-stats,
+  .prof-stat,
+  .prof-logout,
+  .prof-bar-col {
+    animation: none;
+  }
+}

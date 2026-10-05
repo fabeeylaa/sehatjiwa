@@ -1,0 +1,91 @@
+/* Polesan halaman Sosial (menyasar class soc-/chx-/fr-/lb- bawaan) */
+@keyframes socx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.soc-tabs {
+  animation: socx-rise 0.4s ease backwards;
+}
+
+.lb-head,
+.chx-head,
+.lb-me,
+.lb-podium,
+.lb-list,
+.chx-filters,
+.fr-topbar,
+.fr-layout {
+  animation: socx-rise 0.5s ease backwards;
+}
+
+.lb-me {
+  animation-delay: 0.08s;
+}
+
+.lb-podium {
+  animation-delay: 0.14s;
+}
+
+.lb-list {
+  animation-delay: 0.2s;
+}
+
+.chx-filters {
+  animation-delay: 0.06s;
+}
+
+.fr-layout {
+  animation-delay: 0.08s;
+}
+
+.fr-sug,
+.fr-item {
+  animation: socx-rise 0.45s ease backwards;
+}
+
+.fr-sug:nth-child(1) { animation-delay: 0.14s; }
+.fr-sug:nth-child(2) { animation-delay: 0.2s; }
+.fr-sug:nth-child(3) { animation-delay: 0.26s; }
+.fr-sug:nth-child(4) { animation-delay: 0.32s; }
+.fr-sug:nth-child(5) { animation-delay: 0.38s; }
+
+.fr-item:nth-child(1) { animation-delay: 0.14s; }
+.fr-item:nth-child(2) { animation-delay: 0.2s; }
+.fr-item:nth-child(3) { animation-delay: 0.26s; }
+.fr-item:nth-child(4) { animation-delay: 0.32s; }
+.fr-item:nth-child(5) { animation-delay: 0.38s; }
+
+.chx-card {
+  animation: socx-rise 0.5s ease backwards;
+}
+
+.chx-card:nth-child(1) { animation-delay: 0.1s; }
+.chx-card:nth-child(2) { animation-delay: 0.16s; }
+.chx-card:nth-child(3) { animation-delay: 0.22s; }
+.chx-card:nth-child(4) { animation-delay: 0.28s; }
+.chx-card:nth-child(5) { animation-delay: 0.34s; }
+.chx-card:nth-child(6) { animation-delay: 0.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .soc-tabs,
+  .lb-head,
+  .chx-head,
+  .lb-me,
+  .lb-podium,
+  .lb-list,
+  .chx-filters,
+  .fr-topbar,
+  .fr-layout,
+  .fr-sug,
+  .fr-item,
+  .chx-card {
+    animation: none;
+  }
+}

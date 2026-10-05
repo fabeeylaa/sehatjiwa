@@ -1,0 +1,378 @@
+/* Dashboard Layout - Sidebar & Topbar */
+
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--surface-bright);
+}
+
+/* SIDEBAR OVERLAY */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 998;
+}
+
+.sidebar-overlay.open {
+  display: block;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--outline-variant);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 999;
+}
+
+.sb-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px 32px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--forest-deep);
+}
+
+.sb-logo svg {
+  width: 28px;
+  height: 28px;
+}
+
+.sb-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  position: relative;
+}
+
+/* Pill aktif yang meluncur saat pindah feature */
+.sb-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  border-radius: 14px;
+  background: #a6f699;
+  pointer-events: none;
+  z-index: 0;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  z-index: 1;
+  transition: all 0.2s ease;
+}
+
+.sb-link svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.sb-link:hover {
+  background: var(--surface-container-low);
+  color: var(--primary);
+}
+
+.sb-link.active {
+  background: none;
+  color: var(--forest-deep);
+  box-shadow: none;
+}
+
+.sb-link.active:hover {
+  background: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-indicator {
+    transition: none;
+  }
+}
+
+.sb-foot {
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.healthy-mind-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #dcfce7;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: var(--forest-deep);
+  font-weight: 600;
+  font-size: 13px;
+  position: relative;
+}
+
+.healthy-mind-pill svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pill-bar {
+  position: absolute;
+  bottom: 8px;
+  left: 44px;
+  right: 16px;
+  height: 4px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  display: none; /* Just matching the text "Healthy Mind" style, though image shows a small line */
+}
+
+.healthy-mind-pill::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 36px;
+  width: 40px;
+  height: 4px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  padding: 40px;
+  flex: 1;
+  background: var(--surface-bright);
+  /* di-remount tiap pindah route (key=pathname), jadi animasi ini replay */
+  animation: sbx-content 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes sbx-content {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    animation: none;
+  }
+}
+
+/* MOBILE TOPBAR */
+.mobile-topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--outline-variant);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink-900);
+}
+
+.burger-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  transition: background 0.2s ease;
+}
+
+.burger-btn:hover {
+  background: var(--surface-container-low);
+}
+
+.burger-btn span {
+  width: 22px;
+  height: 2px;
+  background: var(--ink-900);
+  border-radius: 2px;
+  transition: transform 0.2s;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 900px) {
+  .mobile-topbar {
+    display: flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    transform: translateX(-100%);
+    box-shadow: 12px 0 30px rgba(0, 0, 0, 0.08);
+    width: 260px;
+    z-index: 999;
+    height: 100vh;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay.open {
+    display: block;
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 1440px) {
+  .content {
+    padding: 32px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 240px;
+    padding: 20px 12px;
+  }
+
+  .sb-logo {
+    font-size: 18px;
+    padding-bottom: 24px;
+  }
+
+  .sb-link {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .content {
+    padding: 28px;
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    transform: translateX(-100%);
+    box-shadow: 12px 0 30px rgba(0, 0, 0, 0.08);
+    width: 260px;
+    z-index: 999;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay.open {
+    display: block;
+  }
+
+  .content {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sb-logo {
+    font-size: 16px;
+    padding-bottom: 20px;
+  }
+
+  .sb-link {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .sb-link svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .healthy-mind-pill {
+    font-size: 12px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .content {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 240px;
+  }
+
+  .sb-logo {
+    font-size: 14px;
+    gap: 8px;
+  }
+
+  .sb-logo svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .sb-link {
+    padding: 8px 10px;
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  .content {
+    padding: 16px;
+  }
+}
