@@ -114,6 +114,36 @@ function UserArticles() {
             <button className="btn btn-ghost" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}>Reset Filter</button>
           )}
         </div>
+      ) : selectedCategory === 'saved' ? (
+        <>
+          {featured && (
+            <section>
+              <article className="edu-hero" style={{ marginTop: 0 }}>
+                <div className="hero-text">
+                  {renderMeta(featured)}
+                  <h2>{featured.title}</h2>
+                  <p>{featured.excerpt}</p>
+                  <Link className="btn btn-primary" to={`/dashboard/articles/${featured.slug}`}>Baca Selengkapnya</Link>
+                </div>
+                {renderMedia(featured)}
+              </article>
+            </section>
+          )}
+          {rest.length > 0 && (
+            <div className="edu-stack" style={{ marginTop: '16px' }}>
+              {rest.map(article => (
+                <Link key={article.id} to={`/dashboard/articles/${article.slug}`} className="edu-card-v2 row">
+                  {renderMedia(article)}
+                  <div>
+                    {renderMeta(article)}
+                    <h3>{article.title}</h3>
+                    <p className="edu-ex">{article.excerpt}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </>
       ) : (
         <>
           {featured && (
