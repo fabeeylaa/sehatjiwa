@@ -30,6 +30,7 @@ function UserProfile({ user }) {
   const [streak, setStreak] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [localUser, setLocalUser] = useState(user);
   const [username, setUsername] = useState(user.username || '');
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -38,7 +39,7 @@ function UserProfile({ user }) {
   const [success, setSuccess] = useState('');
   const fileInputRef = useRef(null);
 
-  const isAdmin = user.role === 'admin';
+  const isAdmin = localUser.role === 'admin';
 
   useEffect(() => {
     if (isAdmin) return;
@@ -93,11 +94,12 @@ function UserProfile({ user }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Gagal menyimpan profil');
+      setLocalUser(data.user);
       setSuccess('Profil berhasil diperbarui');
       setEditing(false);
       setFile(null);
       setPreview(null);
-      navigate('/dashboard/profile', { replace: true });
+      setTimeout(() => navigate('/dashboard/profile'), 1000);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -107,19 +109,19 @@ function UserProfile({ user }) {
 
   const cancelEdit = () => {
     setEditing(false);
-    setUsername(user.username || '');
+    setUsername(localUser.username || '');
     setFile(null);
     setPreview(null);
     setError('');
     setSuccess('');
   };
 
-  const initial = (user.name || '?').charAt(0).toUpperCase();
+  const initial = (localUser.name || '?').charAt(0).toUpperCase();
   const roleLabel = isAdmin ? 'Admin' : 'Pengguna';
 
   const items = [
-    { icon: <User size={20} />, label: 'Nama', value: user.name },
-    { icon: <Mail size={20} />, label: 'Email', value: user.email },
+    { icon: <User size={20} />, label: 'Nama', value: localUser.name },
+    { icon: <Mail size={20} />, label: 'Email', value: localUser.email },
     { icon: <ShieldCheck size={20} />, label: 'Peran', value: roleLabel },
   ];
 
@@ -146,9 +148,9 @@ function UserProfile({ user }) {
 
       <div className="prof-body">
         <div className="prof-avatar-wrap" style={{ position: 'relative', display: 'inline-block' }}>
-          {preview || user.avatar_url ? (
+          {preview || localUser.avatar_url ? (
             <img
-              src={preview || user.avatar_url}
+              src={preview || localUser.avatar_url}
               alt="Foto profil"
               className="prof-avatar prof-avatar-img"
               style={{ objectFit: 'cover' }}
@@ -174,7 +176,7 @@ function UserProfile({ user }) {
             onChange={onPickFile}
           />
         </div>
-        <h2 className="prof-name">{user.name}</h2>
+        <h2 className="prof-name">{localUser.name}</h2>
         <span className="prof-badge">{roleLabel}</span>
 
         {error && <div className="soc-error" style={{ marginTop: '10px' }}>{error}</div>}
@@ -204,14 +206,14 @@ function UserProfile({ user }) {
                 <div className="prof-tile-icon"><User size={20} /></div>
                 <div className="prof-tile-text">
                   <span className="prof-tile-label">Nama (tidak dapat diubah)</span>
-                  <span className="prof-tile-value">{user.name}</span>
+                  <span className="prof-tile-value">{localUser.name}</span>
                 </div>
               </div>
               <div className="prof-tile">
                 <div className="prof-tile-icon"><Mail size={20} /></div>
                 <div className="prof-tile-text">
                   <span className="prof-tile-label">Email</span>
-                  <span className="prof-tile-value">{user.email}</span>
+                  <span className="prof-tile-value">{localUser.email}</span>
                 </div>
               </div>
               <label className="prof-tile prof-input-tile">
