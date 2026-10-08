@@ -1,9 +1,5 @@
 import pool from "../config/db.js";
-
-// Jumlah hari berturut-turut yang dibutuhkan sebelum api streak menyala.
-// Default 7. Untuk testing, tambahkan STREAK_TARGET=1 di server/.env
-// (hapus lagi setelah selesai).
-const STREAK_TARGET = Number(process.env.STREAK_TARGET) || 7;
+const STREAK_TARGET = Number(process.env.STREAK_TARGET) || 1;
 
 // Hitung streak dari kumpulan nomor hari (integer, tiap hari unik).
 const calcStreaks = (dayNums, todayNum) => {
