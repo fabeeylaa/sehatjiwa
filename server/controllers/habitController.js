@@ -49,7 +49,7 @@ export const getHabits = async (req, res) => {
     const result = await pool.query(
       `SELECT h.id, h.user_id, h.title, h.description, h.frequency, h.target_count, h.created_at,
               EXISTS(SELECT 1 FROM habit_logs WHERE habit_id = h.id AND user_id = $1 AND log_date = CURRENT_DATE) as logged_today,
-              COUNT(CASE WHEN hl.log_date >= CURRENT_DATE - INTERVAL '6 days' THEN 1 END) as week_count
+              COUNT(CASE WHEN hl.log_date >= CURRENT_DATE - INTERVAL '6 days' THEN 1 END)::int as week_count
        FROM habits h
        LEFT JOIN habit_logs hl ON h.id = hl.habit_id AND hl.user_id = $1 AND hl.log_date >= CURRENT_DATE - INTERVAL '6 days'
        WHERE h.user_id = $1
@@ -224,31 +224,20 @@ export const getHabitLogs = async (req, res) => {
 export const getWeeklyStats = async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT DATE(hl.log_date) as date, COUNT(DISTINCT hl.habit_id) as count
-       FROM habit_logs hl
-       WHERE hl.user_id = $1 AND hl.log_date >= CURRENT_DATE - INTERVAL '6 days'
-       GROUP BY DATE(hl.log_date)
-       ORDER BY date ASC`,
+      `SELECT d::date AS date, COUNT(DISTINCT hl.habit_id)::int AS count
+       FROM generate_series(CURRENT_DATE - 6, CURRENT_DATE, '1 day') d
+       LEFT JOIN habit_logs hl ON hl.user_id = $1 AND hl.log_date = d::date
+       GROUP BY d::date
+       ORDER BY d::date ASC`,
       [req.user.id],
     );
 
     const daysOfWeek = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
-    const today = new Date();
-    const chartData = [];
-
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split("T")[0];
-      const dayIndex = date.getDay();
-      const entry = result.rows.find((r) => r.date === dateStr);
-
-      chartData.push({
-        day: daysOfWeek[dayIndex],
-        date: dateStr,
-        value: entry?.count || 0,
-      });
-    }
+    const chartData = result.rows.map((r) => ({
+      day: daysOfWeek[new Date(r.date + "T00:00:00Z").getUTCDay()],
+      date: r.date,
+      value: r.count,
+    }));
 
     res.status(200).json({ weekly: chartData });
   } catch (err) {
