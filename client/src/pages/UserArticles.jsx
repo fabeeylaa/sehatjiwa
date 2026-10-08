@@ -1,17 +1,18 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, X, AlertCircle, Apple, Brain, Activity, Moon } from 'lucide-react';
+import { Search, X, AlertCircle, Apple, Brain, Activity, Moon, Bookmark } from 'lucide-react';
 import { ARTICLE_CATEGORIES, categoryLabel } from '../utils/articleCategories';
 import '../pages/Dashboard.css';
 import './UserArticlesPolish.css';
 
 function UserArticles() {
   const [articles, setArticles] = useState([]);
+  const [savedArticles, setSavedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const categories = [{ value: 'all', label: 'Semua' }, ...ARTICLE_CATEGORIES];
+  const categories = [{ value: 'all', label: 'Semua' }, ...ARTICLE_CATEGORIES, { value: 'saved', label: 'Tersimpan' }];
 
   const getCategoryConfig = (cat) => {
     switch (String(cat || '').toLowerCase()) {
@@ -53,21 +54,27 @@ function UserArticles() {
   };
 
   useEffect(() => {
-    fetch('/api/articles?page=1&limit=50', { credentials: 'include' })
-      .then(r => r.json())
-      .then(data => setArticles(data.items || []))
+    Promise.all([
+      fetch('/api/articles?page=1&limit=50', { credentials: 'include' }).then(r => r.json()),
+      fetch('/api/bookmarks', { credentials: 'include' }).then(r => r.json()),
+    ])
+      .then(([articlesData, bookmarks]) => {
+        setArticles(articlesData.items || []);
+        setSavedArticles(Array.isArray(bookmarks) ? bookmarks : []);
+      })
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
   const displayArticles = useMemo(() => {
+    const source = selectedCategory === 'saved' ? savedArticles : articles;
     const query = searchQuery.trim().toLowerCase();
-    return articles.filter(a => {
-      const mCat = selectedCategory === 'all' || String(a.category || '').toLowerCase() === selectedCategory;
+    return source.filter(a => {
+      const mCat = selectedCategory === 'all' || selectedCategory === 'saved' || String(a.category || '').toLowerCase() === selectedCategory;
       const mSearch = query === '' || a.title.toLowerCase().includes(query) || (a.excerpt && a.excerpt.toLowerCase().includes(query));
       return mCat && mSearch;
     });
-  }, [articles, selectedCategory, searchQuery]);
+  }, [articles, savedArticles, selectedCategory, searchQuery]);
 
   if (loading) return <div className="tab-panel" style={{ padding: '24px' }}>Memuat...</div>;
 
@@ -99,9 +106,11 @@ function UserArticles() {
 
       {displayArticles.length === 0 ? (
         <div className="card" style={{ textAlign: 'center', padding: '60px 24px' }}>
-          <AlertCircle size={48} style={{ margin: '0 auto 16px', color: 'var(--gold)' }} />
-          <h3>{noArticlesAtAll ? 'Belum ada artikel' : 'Tidak ada artikel cocok'}</h3>
-          {!noArticlesAtAll && (
+          {selectedCategory === 'saved'
+            ? <Bookmark size={48} style={{ margin: '0 auto 16px', color: 'var(--gold)' }} />
+            : <AlertCircle size={48} style={{ margin: '0 auto 16px', color: 'var(--gold)' }} />}
+          <h3>{selectedCategory === 'saved' ? 'Belum ada artikel tersimpan' : noArticlesAtAll ? 'Belum ada artikel' : 'Tidak ada artikel cocok'}</h3>
+          {!noArticlesAtAll && selectedCategory !== 'saved' && (
             <button className="btn btn-ghost" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}>Reset Filter</button>
           )}
         </div>
