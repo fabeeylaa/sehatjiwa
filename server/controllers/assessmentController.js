@@ -25,7 +25,19 @@ const ARTICLE_RECOMMENDATION_MAP = {
 export const getAssessments = async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, code, title, instruction, source FROM assessments ORDER BY id",
+      `SELECT a.id, a.code, a.title, a.instruction, a.source,
+              a.description, a.is_starter,
+              (SELECT COUNT(*)::int FROM assessment_questions q
+                WHERE q.assessment_id = a.id) AS question_count,
+              (SELECT r.created_at FROM assessment_results r
+                WHERE r.assessment_id = a.id AND r.user_id = $1
+                ORDER BY r.created_at DESC LIMIT 1) AS last_taken_at,
+              (SELECT r.category_label FROM assessment_results r
+                WHERE r.assessment_id = a.id AND r.user_id = $1
+                ORDER BY r.created_at DESC LIMIT 1) AS last_category
+       FROM assessments a
+       ORDER BY a.id`,
+      [req.user.id],
     );
     res.status(200).json({ assessments: result.rows });
   } catch (err) {
@@ -158,7 +170,9 @@ export const submitAssessment = async (req, res) => {
 
     const articles = topics.length > 0
       ? await pool.query(
-          "SELECT id, title, category FROM articles WHERE category = ANY($1) ORDER BY created_at DESC LIMIT 5",
+          // LOWER() supaya cocok walau huruf besar/kecil kategori artikel berbeda;
+          // slug dikirim agar frontend bisa membuat link ke artikelnya.
+          "SELECT id, title, slug, category FROM articles WHERE LOWER(category) = ANY($1) ORDER BY created_at DESC LIMIT 5",
           [topics],
         )
       : { rows: [] };
@@ -184,7 +198,9 @@ export const getAssessmentHistory = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT r.id, r.total_score, r.category_label, r.result_message, r.flagged, r.created_at,
-              a.title AS assessment_title, a.code AS assessment_code
+              a.title AS assessment_title, a.code AS assessment_code,
+              (SELECT MAX(sr.max_score) FROM assessment_score_ranges sr
+                WHERE sr.assessment_id = r.assessment_id) AS max_score
        FROM assessment_results r
        JOIN assessments a ON a.id = r.assessment_id
        WHERE r.user_id = $1

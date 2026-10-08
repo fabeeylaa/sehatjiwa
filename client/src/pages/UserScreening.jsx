@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { categoryLabel } from "../utils/articleCategories";
 import "../pages/Dashboard.css";
 import "./UserScreening.css";
 import "./UserScreeningPolish.css";
@@ -18,6 +20,22 @@ const scrBadge = (label = "") => {
     return "scrx-badge-ringan";
   return "";
 };
+
+const formatDateTime = (value) =>
+  new Date(value).toLocaleString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+const formatDate = (value) =>
+  new Date(value).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 
 function UserScreening() {
   // mode: 'home' (daftar + riwayat) | 'quiz' | 'result'
@@ -219,10 +237,14 @@ function UserScreening() {
             <div style={{ marginTop: "20px" }}>
               <div className="history-date">Artikel yang disarankan</div>
               {outcome.recommended_articles.map((a) => (
-                <div key={a.id} className="history-row">
+                <Link
+                  key={a.id}
+                  to={`/dashboard/articles/${a.slug}`}
+                  className="history-row scrx-rec-link"
+                >
                   <div className="history-score">{a.title}</div>
-                  <div className="history-score">{a.category}</div>
-                </div>
+                  <div className="history-score">{categoryLabel(a.category)}</div>
+                </Link>
               ))}
             </div>
           )}
@@ -255,19 +277,49 @@ function UserScreening() {
 
         {error && <div className="scr-error">{error}</div>}
 
+        {assessments.some((a) => a.is_starter) && (
+          <p className="scrx-guide">
+            Bingung mau pilih yang mana? Mulai dari yang bertanda{" "}
+            <strong>Mulai dari sini</strong>, lalu lanjut ke yang lain bila perlu.
+          </p>
+        )}
+
         <div className="scr-list">
           {assessments.map((a, i) => (
-            <div key={a.id} className="scr-item">
+            <div
+              key={a.id}
+              className={`scr-item ${a.is_starter ? "scrx-starter" : ""}`}
+            >
               <div className="scrx-item-main"><span className={`scrx-icon scrx-tone-${i % 3}`}>{scrIcons[i % 3]}</span><div>
-                <div className="scr-item-title">{a.title}</div>
-                {a.source && <div className="scr-item-desc">{a.source}</div>}
+                <div className="scr-item-title">
+                  {a.title}
+                  {a.is_starter && (
+                    <span className="scrx-starter-tag">Mulai dari sini</span>
+                  )}
+                </div>
+                {(a.description || a.source) && (
+                  <div className="scr-item-desc">{a.description || a.source}</div>
+                )}
+                <div className="scrx-item-meta">
+                  {a.question_count > 0 && (
+                    <span>
+                      {a.question_count} pertanyaan · ±
+                      {Math.max(1, Math.ceil(a.question_count / 5))} menit
+                    </span>
+                  )}
+                  <span className={a.last_taken_at ? "scrx-done" : ""}>
+                    {a.last_taken_at
+                      ? `Terakhir diisi ${formatDate(a.last_taken_at)} · ${a.last_category}`
+                      : "Belum pernah diisi"}
+                  </span>
+                </div>
               </div></div>
               <button
                 type="button"
                 className="btn btn-primary btn-sm"
                 onClick={() => startQuiz(a.id)}
               >
-                Mulai
+                {a.last_taken_at ? "Ulangi" : "Mulai"}
               </button>
             </div>
           ))}
@@ -276,7 +328,7 @@ function UserScreening() {
 
       <div className="card" style={{ marginTop: "16px" }}>
         <h3>Riwayat Screening</h3>
-        <p className="hint">Hasil assessment terbaru Anda</p>
+        <p className="hint">Hasil screening terbaru kamu</p>
 
         {results.length === 0 ? (
           <p style={{ marginTop: "16px", color: "var(--on-surface-variant)" }}>
@@ -284,15 +336,19 @@ function UserScreening() {
           </p>
         ) : (
           <div style={{ marginTop: "16px" }}>
-            {results.map((result, idx) => (
-              <div key={idx} className="history-row">
+            {results.map((result) => (
+              <div key={result.id} className="history-row">
                 <div>
+                  <div className="scrx-hist-title">{result.assessment_title}</div>
                   <div className="history-date">
-                    {new Date(result.created_at).toLocaleDateString("id-ID")}
+                    {formatDateTime(result.created_at)}
                   </div>
                   <span className={`scrx-badge ${scrBadge(result.category_label)}`}>{result.category_label}</span>
                 </div>
-                <div className="history-score scrx-score">Skor: {result.total_score}</div>
+                <div className="history-score scrx-score">
+                  Skor: {result.total_score}
+                  {result.max_score ? `/${result.max_score}` : ""}
+                </div>
               </div>
             ))}
           </div>
