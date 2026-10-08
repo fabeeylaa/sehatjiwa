@@ -36,15 +36,19 @@ function UserArticleDetail() {
     setIsBookmarked(!isBookmarked);
 
     try {
+      let res;
       if (isBookmarked) {
-        await fetch(`/api/bookmarks/${article.id}`, { method: 'DELETE', credentials: 'include' });
+        res = await fetch(`/api/bookmarks/${article.id}`, { method: 'DELETE', credentials: 'include' });
       } else {
-        await fetch('/api/bookmarks', {
+        res = await fetch('/api/bookmarks', {
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ article_id: article.id })
         });
+      }
+      if (!res.ok) {
+        throw new Error('Gagal memperbarui bookmark');
       }
     } catch (err) {
       console.error(err);
