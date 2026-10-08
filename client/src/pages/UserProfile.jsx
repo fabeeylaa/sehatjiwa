@@ -158,16 +158,17 @@ function UserProfile({ user }) {
           ) : (
             <div className="prof-avatar">{initial}</div>
           )}
-          {editing && (
-            <button
-              className="prof-avatar-cam"
-              onClick={() => fileInputRef.current?.click()}
-              title="Ganti foto"
-              aria-label="Ganti foto profil"
-            >
-              <Camera size={16} />
-            </button>
-          )}
+          <button
+            className="prof-avatar-cam"
+            onClick={() => {
+              if (!editing) setEditing(true);
+              fileInputRef.current?.click();
+            }}
+            title="Ganti foto"
+            aria-label="Ganti foto profil"
+          >
+            <Camera size={16} />
+          </button>
           <input
             ref={fileInputRef}
             type="file"

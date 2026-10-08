@@ -92,6 +92,7 @@
   place-items: center;
   cursor: pointer;
   transition: transform 0.2s ease;
+  z-index: 3;
 }
 
 .prof-avatar-cam:hover {
