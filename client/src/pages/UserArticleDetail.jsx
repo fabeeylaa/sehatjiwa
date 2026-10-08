@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Bookmark, BookmarkCheck, ChevronLeft, BookOpen, Heart, Share2, MessageSquare } from 'lucide-react';
+import { categoryLabel } from '../utils/articleCategories';
 import './UserArticleDetail.css';
 import './UserArticleDetailPolish.css';
 
@@ -98,7 +99,7 @@ function UserArticleDetail() {
 
           <div className="ad-meta-top">
             <div className="ad-tags">
-              <span className="ad-tag">{article.category}</span>
+              <span className="ad-tag">{categoryLabel(article.category)}</span>
               <span className="ad-tag" style={{ background: '#a3f2a7', color: '#196621' }}>Edukasi</span>
             </div>
             <div className="ad-read-time">{readTime} Menit Membaca</div>
@@ -159,7 +160,7 @@ function UserArticleDetail() {
                       )}
                     </div>
                     <div className="ad-related-info">
-                      <span className="ad-related-cat">{a.category}</span>
+                      <span className="ad-related-cat">{categoryLabel(a.category)}</span>
                       <span className="ad-related-text">{a.title}</span>
                     </div>
                   </Link>

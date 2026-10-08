@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
+import { ARTICLE_CATEGORIES, categoryLabel } from '../utils/articleCategories';
 import '../pages/Dashboard.css';
+
+const DEFAULT_CATEGORY = ARTICLE_CATEGORIES[0].value;
 
 function AdminArticles() {
   const [articles, setArticles] = useState([]);
@@ -9,14 +12,12 @@ function AdminArticles() {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    category: 'Umum',
+    category: DEFAULT_CATEGORY,
     excerpt: '',
     cover_image: ''
   });
   const [formError, setFormError] = useState('');
   const [viewingArticle, setViewingArticle] = useState(null);
-
-  const categories = ['Stres', 'Kecemasan', 'Depresi', 'Umum'];
 
   useEffect(() => {
     fetchArticles();
@@ -52,10 +53,13 @@ function AdminArticles() {
 
   const openEditModal = (article) => {
     setEditingId(article.id);
+    const currentCategory = String(article.category || '').toLowerCase();
     setFormData({
       title: article.title,
       content: article.content,
-      category: article.category,
+      category: ARTICLE_CATEGORIES.some((c) => c.value === currentCategory)
+        ? currentCategory
+        : DEFAULT_CATEGORY,
       excerpt: article.excerpt || '',
       cover_image: article.cover_image || ''
     });
@@ -65,7 +69,7 @@ function AdminArticles() {
 
   const openAddModal = () => {
     setEditingId(null);
-    setFormData({ title: '', content: '', category: 'Umum', excerpt: '', cover_image: '' });
+    setFormData({ title: '', content: '', category: DEFAULT_CATEGORY, excerpt: '', cover_image: '' });
     setFormError('');
     setShowModal(true);
   };
@@ -152,7 +156,7 @@ function AdminArticles() {
                 <tr key={article.id} style={{ borderBottom: '1px solid var(--outline-variant)' }}>
                   <td style={{ padding: '12px', fontWeight: 500 }}>{article.title}</td>
                   <td style={{ padding: '12px' }}>
-                    <span className="tag">{article.category}</span>
+                    <span className="tag">{categoryLabel(article.category)}</span>
                   </td>
                   <td style={{ padding: '12px', textAlign: 'center' }}>
                     {new Date(article.created_at).toLocaleDateString('id-ID')}
@@ -222,8 +226,8 @@ function AdminArticles() {
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   style={{ width: '100%', padding: '10px', border: '1px solid var(--outline-variant)', borderRadius: '8px', fontSize: '14px' }}
                 >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                  {ARTICLE_CATEGORIES.map(cat => (
+                    <option key={cat.value} value={cat.value}>{cat.label}</option>
                   ))}
                 </select>
               </div>
@@ -288,7 +292,7 @@ function AdminArticles() {
               <div>
                 <h3 style={{ marginBottom: '8px' }}>{viewingArticle.title}</h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span className="tag">{viewingArticle.category}</span>
+                  <span className="tag">{categoryLabel(viewingArticle.category)}</span>
                   <span className="hint">
                     {new Date(viewingArticle.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </span>
