@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   User,
@@ -10,6 +10,8 @@ import {
   Leaf,
   Sparkles,
   Flame,
+  Pencil,
+  Camera,
 } from 'lucide-react';
 import './UserProfile.css';
 import './UserProfilePolish.css';
@@ -27,6 +29,14 @@ function UserProfile({ user }) {
   const [latest, setLatest] = useState(null);
   const [streak, setStreak] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [username, setUsername] = useState(user.username || '');
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const fileInputRef = useRef(null);
 
   const isAdmin = user.role === 'admin';
 
@@ -61,6 +71,49 @@ function UserProfile({ user }) {
     }
   };
 
+  const onPickFile = (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
+  };
+
+  const handleSave = async () => {
+    setError('');
+    setSuccess('');
+    setSaving(true);
+    try {
+      const form = new FormData();
+      form.append('username', username.trim());
+      if (file) form.append('avatar', file);
+      const res = await fetch('/api/auth/profile', {
+        method: 'PUT',
+        credentials: 'include',
+        body: form,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Gagal menyimpan profil');
+      setSuccess('Profil berhasil diperbarui');
+      setEditing(false);
+      setFile(null);
+      setPreview(null);
+      navigate('/dashboard/profile', { replace: true });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditing(false);
+    setUsername(user.username || '');
+    setFile(null);
+    setPreview(null);
+    setError('');
+    setSuccess('');
+  };
+
   const initial = (user.name || '?').charAt(0).toUpperCase();
   const roleLabel = isAdmin ? 'Admin' : 'Pengguna';
 
@@ -92,21 +145,99 @@ function UserProfile({ user }) {
       </div>
 
       <div className="prof-body">
-        <div className="prof-avatar">{initial}</div>
+        <div className="prof-avatar-wrap" style={{ position: 'relative', display: 'inline-block' }}>
+          {preview || user.avatar_url ? (
+            <img
+              src={preview || user.avatar_url}
+              alt="Foto profil"
+              className="prof-avatar prof-avatar-img"
+              style={{ objectFit: 'cover' }}
+            />
+          ) : (
+            <div className="prof-avatar">{initial}</div>
+          )}
+          {editing && (
+            <button
+              className="prof-avatar-cam"
+              onClick={() => fileInputRef.current?.click()}
+              title="Ganti foto"
+              aria-label="Ganti foto profil"
+            >
+              <Camera size={16} />
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={onPickFile}
+          />
+        </div>
         <h2 className="prof-name">{user.name}</h2>
         <span className="prof-badge">{roleLabel}</span>
 
-        <div className="prof-grid">
-          {items.map((it) => (
-            <div className="prof-tile" key={it.label}>
-              <div className="prof-tile-icon">{it.icon}</div>
-              <div className="prof-tile-text">
-                <span className="prof-tile-label">{it.label}</span>
-                <span className="prof-tile-value">{it.value}</span>
-              </div>
+        {error && <div className="soc-error" style={{ marginTop: '10px' }}>{error}</div>}
+        {success && <div className="soc-info" style={{ marginTop: '10px' }}>{success}</div>}
+
+        {!editing ? (
+          <>
+            <button className="btn btn-ghost btn-sm" onClick={() => setEditing(true)} style={{ marginTop: '12px' }}>
+              <Pencil size={14} /> Ubah profil
+            </button>
+            <div className="prof-grid">
+              {items.map((it) => (
+                <div className="prof-tile" key={it.label}>
+                  <div className="prof-tile-icon">{it.icon}</div>
+                  <div className="prof-tile-text">
+                    <span className="prof-tile-label">{it.label}</span>
+                    <span className="prof-tile-value">{it.value}</span>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        ) : (
+          <>
+            <div className="prof-grid prof-grid-edit">
+              <div className="prof-tile">
+                <div className="prof-tile-icon"><User size={20} /></div>
+                <div className="prof-tile-text">
+                  <span className="prof-tile-label">Nama (tidak dapat diubah)</span>
+                  <span className="prof-tile-value">{user.name}</span>
+                </div>
+              </div>
+              <div className="prof-tile">
+                <div className="prof-tile-icon"><Mail size={20} /></div>
+                <div className="prof-tile-text">
+                  <span className="prof-tile-label">Email</span>
+                  <span className="prof-tile-value">{user.email}</span>
+                </div>
+              </div>
+              <label className="prof-tile prof-input-tile">
+                <div className="prof-tile-icon"><Pencil size={18} /></div>
+                <div className="prof-tile-text">
+                  <span className="prof-tile-label">Username (3-20, huruf/angka/_)</span>
+                  <input
+                    className="prof-input"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="username"
+                    maxLength={20}
+                  />
+                </div>
+              </label>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '12px', justifyContent: 'center' }}>
+              <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+              <button className="btn btn-ghost btn-sm" onClick={cancelEdit} disabled={saving}>
+                Batal
+              </button>
+            </div>
+          </>
+        )}
 
         {!isAdmin && (
           <section className="prof-stats">

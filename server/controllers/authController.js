@@ -68,6 +68,8 @@ export const login = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        username: user.username,
+        avatar_url: user.avatar_url,
         role: user.role,
       },
     });
@@ -80,7 +82,7 @@ export const login = async (req, res) => {
 export const getMe = async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, name, email, role FROM users WHERE id = $1',
+      'SELECT id, name, email, username, avatar_url, role FROM users WHERE id = $1',
       [req.user.id]
     );
 
@@ -98,4 +100,46 @@ export const getMe = async (req, res) => {
 export const logout = (req, res) => {
   res.clearCookie('token');
   res.status(200).json({ message: 'Logout berhasil' });
+};
+
+export const updateProfile = async (req, res) => {
+  const { username } = req.body;
+  const avatarUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+  try {
+    const userResult = await pool.query(
+      'SELECT username, avatar_url FROM users WHERE id = $1',
+      [req.user.id]
+    );
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+
+    const newUsername = username?.trim() || userResult.rows[0].username;
+    if (newUsername !== userResult.rows[0].username) {
+      if (!/^[a-zA-Z0-9_]{3,20}$/.test(newUsername)) {
+        return res.status(400).json({
+          message: 'Username harus 3-20 karakter (huruf, angka, underscore)',
+        });
+      }
+      const duplicate = await pool.query(
+        'SELECT id FROM users WHERE username = $1 AND id != $2',
+        [newUsername, req.user.id]
+      );
+      if (duplicate.rows.length > 0) {
+        return res.status(400).json({ message: 'Username sudah dipakai' });
+      }
+    }
+
+    const newAvatarUrl = avatarUrl || userResult.rows[0].avatar_url;
+    const result = await pool.query(
+      'UPDATE users SET username = $1, avatar_url = $2 WHERE id = $3 RETURNING id, name, email, username, avatar_url, role',
+      [newUsername, newAvatarUrl, req.user.id]
+    );
+
+    res.status(200).json({ message: 'Profil berhasil diupdate', user: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Terjadi kesalahan server' });
+  }
 };
