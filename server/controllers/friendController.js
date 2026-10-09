@@ -53,7 +53,8 @@ export const getFriends = async (req, res) => {
         CASE WHEN f.requester_id = $1 THEN 'outgoing' ELSE 'incoming' END AS direction,
         u.id AS friend_id,
         u.name,
-        u.username
+        u.username,
+        u.avatar_url
       FROM friendships f
       JOIN users u ON u.id = CASE WHEN f.requester_id = $1 THEN f.addressee_id ELSE f.requester_id END
       WHERE f.requester_id = $1 OR f.addressee_id = $1

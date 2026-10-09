@@ -23,7 +23,6 @@ function UserArticles() {
     }
   };
 
-  // Perkiraan waktu baca dari isi artikel (sama dengan halaman detail)
   const readTime = (article) => {
     if (!article.content) return null;
     const words = article.content.trim().split(/\s+/).length;

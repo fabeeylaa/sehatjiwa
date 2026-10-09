@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import pool from "../config/db.js";
+import fs from "fs/promises";
+import path from "path";
 
 export const register = async (req, res) => {
   const { name, email, password, username } = req.body;
@@ -103,19 +105,22 @@ export const logout = (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-  const { username } = req.body;
+  const { name, username } = req.body;
   const avatarUrl = req.file ? `/uploads/${req.file.filename}` : null;
+  const userId = req.user.id;
 
   try {
     const userResult = await pool.query(
-      'SELECT username, avatar_url FROM users WHERE id = $1',
-      [req.user.id]
+      'SELECT name, username, avatar_url FROM users WHERE id = $1',
+      [userId]
     );
     if (userResult.rows.length === 0) {
       return res.status(404).json({ message: 'User tidak ditemukan' });
     }
 
+    const newName = name?.trim() || userResult.rows[0].name;
     const newUsername = username?.trim() || userResult.rows[0].username;
+
     if (newUsername !== userResult.rows[0].username) {
       if (!/^[a-zA-Z0-9_]{3,20}$/.test(newUsername)) {
         return res.status(400).json({
@@ -124,21 +129,30 @@ export const updateProfile = async (req, res) => {
       }
       const duplicate = await pool.query(
         'SELECT id FROM users WHERE username = $1 AND id != $2',
-        [newUsername, req.user.id]
+        [newUsername, userId]
       );
       if (duplicate.rows.length > 0) {
+        if (req.file) await fs.unlink(req.file.path).catch(() => {});
         return res.status(400).json({ message: 'Username sudah dipakai' });
       }
     }
 
     const newAvatarUrl = avatarUrl || userResult.rows[0].avatar_url;
+    
+    // Hapus file avatar lama jika ada yang baru
+    if (avatarUrl && userResult.rows[0].avatar_url) {
+        const oldFile = path.join('uploads', path.basename(userResult.rows[0].avatar_url));
+        await fs.unlink(oldFile).catch(() => {});
+    }
+
     const result = await pool.query(
-      'UPDATE users SET username = $1, avatar_url = $2 WHERE id = $3 RETURNING id, name, email, username, avatar_url, role',
-      [newUsername, newAvatarUrl, req.user.id]
+      'UPDATE users SET name = $1, username = $2, avatar_url = $3 WHERE id = $4 RETURNING id, name, email, username, avatar_url, role',
+      [newName, newUsername, newAvatarUrl, userId]
     );
 
     res.status(200).json({ message: 'Profil berhasil diupdate', user: result.rows[0] });
   } catch (err) {
+    if (req.file) await fs.unlink(req.file.path).catch(() => {});
     console.error(err);
     res.status(500).json({ message: 'Terjadi kesalahan server' });
   }

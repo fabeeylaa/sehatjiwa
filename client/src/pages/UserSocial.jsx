@@ -79,7 +79,7 @@ function Leaderboard() {
 
       {!loading && me && (
         <div className="card lb-me">
-          <Avatar seed={me.username} name={me.name} size={56} />
+          <Avatar seed={me.username} name={me.name} avatar={me.avatar_url} size={56} />
           <div className="lb-me-text">
             <div className="lb-me-label">Peringkatmu</div>
             <div className="lb-me-rank">#{me.rank_position}</div>
@@ -103,7 +103,7 @@ function Leaderboard() {
               className={`lb-pod lb-pod-${r.rank_position} ${r.is_me ? 'me' : ''}`}
             >
               {r.rank_position === 1 && <Trophy className="lb-crown" size={22} />}
-              <Avatar seed={r.username} name={r.name} size={r.rank_position === 1 ? 72 : 58} />
+              <Avatar seed={r.username} name={r.name} avatar={r.avatar_url} size={r.rank_position === 1 ? 72 : 58} />
               <div className="lb-pod-name">
                 {r.name}
                 {r.is_me ? ' (Kamu)' : ''}
@@ -123,7 +123,7 @@ function Leaderboard() {
           {rest.map((r) => (
             <div key={r.user_id} className={`lb-row ${r.is_me ? 'me' : ''}`}>
               <div className="lb-rank">{r.rank_position}</div>
-              <Avatar seed={r.username} name={r.name} size={44} />
+              <Avatar seed={r.username} name={r.name} avatar={r.avatar_url} size={44} />
               <div className="lb-row-text">
                 <div className="soc-name">
                   {r.name}
@@ -145,7 +145,7 @@ function Leaderboard() {
   );
 }
 
-function Avatar({ seed, name, size = 46 }) {
+function Avatar({ seed, name, avatar, size = 46 }) {
   const [failed, setFailed] = useState(false);
   const initial = (name || seed || '?').charAt(0).toUpperCase();
   if (failed) {
@@ -161,7 +161,7 @@ function Avatar({ seed, name, size = 46 }) {
       width={size}
       height={size}
       alt=""
-      src={`https://api.dicebear.com/9.x/personas/svg?seed=${encodeURIComponent(seed || name || 'x')}`}
+      src={avatar || `https://api.dicebear.com/9.x/personas/svg?seed=${encodeURIComponent(seed || name || 'x')}`}
       onError={() => setFailed(true)}
     />
   );
@@ -319,7 +319,7 @@ function Friends() {
               <div className="fr-sug-list">
                 {suggestions.map((s) => (
                   <div className="fr-sug" key={s.user_id}>
-                    <Avatar seed={s.username} name={s.name} size={52} />
+                    <Avatar seed={s.username} name={s.name} avatar={s.avatar_url} size={52} />
                     <div className="fr-sug-name">{s.name}</div>
                     <div className="fr-sub">@{s.username}</div>
                     <button
@@ -341,7 +341,7 @@ function Friends() {
               <h3>Permintaan Masuk</h3>
               {incoming.map((f) => (
                 <div className="fr-item" key={f.id}>
-                  <Avatar seed={f.username} name={f.name} />
+                  <Avatar seed={f.username} name={f.name} avatar={f.avatar_url} />
                   <div className="fr-item-text">
                     <div className="soc-name">{f.name}</div>
                     <div className="fr-sub">@{f.username}</div>
@@ -380,7 +380,7 @@ function Friends() {
             )}
             {accepted.map((f) => (
               <div className="fr-item fr-friend" key={f.id}>
-                <Avatar seed={f.username} name={f.name} />
+                <Avatar seed={f.username} name={f.name} avatar={f.avatar_url} />
                 <div className="fr-item-text">
                   <div className="soc-name">{f.name}</div>
                   <div className="fr-sub">@{f.username}</div>
@@ -397,7 +397,7 @@ function Friends() {
               <h3>Menunggu Konfirmasi</h3>
               {outgoing.map((f) => (
                 <div className="fr-item" key={f.id}>
-                  <Avatar seed={f.username} name={f.name} />
+                  <Avatar seed={f.username} name={f.name} avatar={f.avatar_url} />
                   <div className="fr-item-text">
                     <div className="soc-name">{f.name}</div>
                     <div className="fr-sub">@{f.username}</div>

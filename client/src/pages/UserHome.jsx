@@ -1,3 +1,4 @@
+import { useEffect, useState, useCallback, useRef } from 'react';
 import './UserHomeNew.css';
 import './UserHomePolish.css';
 import { useNavigate } from 'react-router-dom';
@@ -5,18 +6,79 @@ import ProgressRing from '../components/ProgressRing';
 
 function UserHome({ user }) {
   const navigate = useNavigate();
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const abortRef = useRef(null);
 
-  const weekData = [
-    { day: 'Sen', value: 4 },
-    { day: 'Sel', value: 6 },
-    { day: 'Rab', value: 5 },
-    { day: 'Kam', value: 7 },
-    { day: 'Jum', value: 3 },
-    { day: 'Sab', value: 8 },
-    { day: 'Min', value: 6 },
+  const fetchSummary = useCallback(async () => {
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+    try {
+      const res = await fetch('/api/dashboard/summary', {
+        credentials: 'include',
+        signal: ac.signal,
+      });
+      if (!res.ok) throw new Error('Gagal memuat ringkasan');
+      const data = await res.json();
+      if (!ac.signal.aborted) {
+        setSummary(data);
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error(err);
+      }
+    } finally {
+      if (!ac.signal.aborted) {
+        setLoading(false);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSummary();
+    // Polling setiap 10 detik untuk real-time cross-user & sinkronisasi instan
+    const intervalId = setInterval(() => {
+      if (!document.hidden) {
+        fetchSummary();
+      }
+    }, 10000);
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') fetchSummary();
+    };
+    const onFocus = () => fetchSummary();
+    const onUpdate = () => fetchSummary();
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('focus', onFocus);
+    window.addEventListener('habits:updated', onUpdate);
+    window.addEventListener('screening:submitted', onUpdate);
+
+    return () => {
+      clearInterval(intervalId);
+      abortRef.current?.abort();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('habits:updated', onUpdate);
+      window.removeEventListener('screening:submitted', onUpdate);
+    };
+  }, [fetchSummary]);
+
+  const weekData = summary?.weekly?.length > 0 ? summary.weekly : [
+    { day: 'Sen', value: 0 },
+    { day: 'Sel', value: 0 },
+    { day: 'Rab', value: 0 },
+    { day: 'Kam', value: 0 },
+    { day: 'Jum', value: 0 },
+    { day: 'Sab', value: 0 },
+    { day: 'Min', value: 0 },
   ];
   const todayIndex = weekData.length - 1;
   const maxWeek = Math.max(...weekData.map(d => d.value), 1);
+
+  const healthScore = summary?.healthScore ?? 85;
+  const streak = summary?.habits?.streak ?? 0;
 
   const quickLinks = [
     {
@@ -61,7 +123,7 @@ function UserHome({ user }) {
 
       <div className="dash-header">
         <h1>Halo, {user?.name || 'Budi'}!</h1>
-        <p>Bagaimana perasaanmu hari ini?</p>
+        <p>Bagaimana perasaanmu hari ini? (Streak: {streak} hari 🔥)</p>
       </div>
 
       <div className="dash-grid">
@@ -69,14 +131,18 @@ function UserHome({ user }) {
           <div className="health-card">
             <div className="health-info">
               <h2>Skor Kesehatan Hari Ini</h2>
-              <p>Skor kesehatan mental dan fisikmu menunjukkan status Sangat Baik. Terus pertahankan pola hidup sehatmu!</p>
+              <p>
+                {summary?.lastScreening
+                  ? `Hasil screening terakhir: ${summary.lastScreening.assessment_title} (${summary.lastScreening.category_label}).`
+                  : 'Lakukan screening pertama Anda untuk memantau kesehatan mental.'}
+              </p>
               <div className="trend-badge">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 7L13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg>
-                +5 dari minggu lalu
+                Peringkat #{summary?.meRank?.rank_position || '-'} di Leaderboard
               </div>
             </div>
             <div className="health-ring">
-              <ProgressRing value={85} total={100} size={140} stroke={14} />
+              <ProgressRing value={healthScore} total={100} size={140} stroke={14} />
             </div>
           </div>
         </div>

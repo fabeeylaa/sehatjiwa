@@ -29,8 +29,10 @@ function UserProfile({ user }) {
   const [latest, setLatest] = useState(null);
   const [streak, setStreak] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  
   const [editing, setEditing] = useState(false);
   const [localUser, setLocalUser] = useState(user);
+  const [name, setName] = useState(user.name);
   const [username, setUsername] = useState(user.username || '');
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -40,6 +42,52 @@ function UserProfile({ user }) {
   const fileInputRef = useRef(null);
 
   const isAdmin = localUser.role === 'admin';
+
+  const resetForm = () => {
+    setName(user.name);
+    setUsername(user.username || '');
+    setFile(null);
+    setPreview(null);
+    setError('');
+    setSuccess('');
+  };
+
+  const handleSave = async () => {
+    setError('');
+    setSuccess('');
+    setSaving(true);
+    try {
+      const form = new FormData();
+      form.append('name', name);
+      if (file) form.append('avatar', file);
+      const res = await fetch('/api/auth/profile', {
+        method: 'PUT',
+        credentials: 'include',
+        body: form,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Gagal menyimpan profil');
+      setLocalUser(data.user);
+      setSuccess('Profil berhasil diperbarui');
+      setEditing(false);
+      setFile(null);
+      setPreview(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditing(false);
+    setName(localUser.name);
+    setUsername(localUser.username || '');
+    setFile(null);
+    setPreview(null);
+    setError('');
+    setSuccess('');
+  };
 
   useEffect(() => {
     if (isAdmin) return;
@@ -79,50 +127,12 @@ function UserProfile({ user }) {
     setPreview(URL.createObjectURL(f));
   };
 
-  const handleSave = async () => {
-    setError('');
-    setSuccess('');
-    setSaving(true);
-    try {
-      const form = new FormData();
-      form.append('username', username.trim());
-      if (file) form.append('avatar', file);
-      const res = await fetch('/api/auth/profile', {
-        method: 'PUT',
-        credentials: 'include',
-        body: form,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Gagal menyimpan profil');
-      setLocalUser(data.user);
-      setSuccess('Profil berhasil diperbarui');
-      setEditing(false);
-      setFile(null);
-      setPreview(null);
-      setTimeout(() => navigate('/dashboard/profile'), 1000);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const cancelEdit = () => {
-    setEditing(false);
-    setUsername(localUser.username || '');
-    setFile(null);
-    setPreview(null);
-    setError('');
-    setSuccess('');
-  };
-
   const initial = (localUser.name || '?').charAt(0).toUpperCase();
   const roleLabel = isAdmin ? 'Admin' : 'Pengguna';
 
   const items = [
     { icon: <User size={20} />, label: 'Nama', value: localUser.name },
     { icon: <Mail size={20} />, label: 'Email', value: localUser.email },
-    { icon: <ShieldCheck size={20} />, label: 'Peran', value: roleLabel },
   ];
 
   const total = habits.length;
@@ -178,7 +188,6 @@ function UserProfile({ user }) {
           />
         </div>
         <h2 className="prof-name">{localUser.name}</h2>
-        <span className="prof-badge">{roleLabel}</span>
 
         {error && <div className="soc-error" style={{ marginTop: '10px' }}>{error}</div>}
         {success && <div className="soc-info" style={{ marginTop: '10px' }}>{success}</div>}
@@ -203,13 +212,18 @@ function UserProfile({ user }) {
         ) : (
           <>
             <div className="prof-grid prof-grid-edit">
-              <div className="prof-tile">
+              <label className="prof-tile prof-input-tile">
                 <div className="prof-tile-icon"><User size={20} /></div>
                 <div className="prof-tile-text">
-                  <span className="prof-tile-label">Nama (tidak dapat diubah)</span>
-                  <span className="prof-tile-value">{localUser.name}</span>
+                  <span className="prof-tile-label">Nama</span>
+                  <input
+                    className="prof-input"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    maxLength={100}
+                  />
                 </div>
-              </div>
+              </label>
               <div className="prof-tile">
                 <div className="prof-tile-icon"><Mail size={20} /></div>
                 <div className="prof-tile-text">
@@ -217,19 +231,13 @@ function UserProfile({ user }) {
                   <span className="prof-tile-value">{localUser.email}</span>
                 </div>
               </div>
-              <label className="prof-tile prof-input-tile">
+              <div className="prof-tile">
                 <div className="prof-tile-icon"><Pencil size={18} /></div>
                 <div className="prof-tile-text">
-                  <span className="prof-tile-label">Username (3-20, huruf/angka/_)</span>
-                  <input
-                    className="prof-input"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="username"
-                    maxLength={20}
-                  />
+                  <span className="prof-tile-label">Username (tidak dapat diubah)</span>
+                  <span className="prof-tile-value">@{localUser.username}</span>
                 </div>
-              </label>
+              </div>
             </div>
             <div style={{ display: 'flex', gap: '8px', marginTop: '12px', justifyContent: 'center' }}>
               <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving}>
@@ -245,7 +253,6 @@ function UserProfile({ user }) {
         {!isAdmin && (
           <section className="prof-stats">
             <h3>Statistik &amp; Ringkasan</h3>
-
             {!loaded ? (
               <p className="prof-muted">Memuat statistik...</p>
             ) : (

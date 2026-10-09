@@ -109,6 +109,7 @@ function UserScreening() {
       if (!res.ok) throw new Error(data.message || "Gagal mengirim jawaban");
       setOutcome(data);
       setMode("result");
+      window.dispatchEvent(new CustomEvent('screening:submitted'));
     } catch (err) {
       setError(err.message);
     } finally {

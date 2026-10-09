@@ -79,6 +79,7 @@ function UserHabits() {
       });
       if (!res.ok) throw new Error("Gagal menyimpan centang");
       await fetchData();
+      window.dispatchEvent(new CustomEvent('habits:updated'));
     } catch (err) {
       console.error(err);
       setHabits((prev) =>
