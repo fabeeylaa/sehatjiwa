@@ -67,6 +67,53 @@
     0 10px 28px rgba(22, 163, 74, 0.35);
 }
 
+.prof-avatar-img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+}
+
+.prof-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.prof-avatar-cam {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  border: 3px solid #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  z-index: 3;
+}
+
+.prof-avatar-cam:hover {
+  transform: scale(1.1);
+}
+
+.prof-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--outline-variant);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-900);
+}
+
+.prof-input:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
 .prof-name {
   margin: 16px 0 8px;
   font-family: 'Poppins', sans-serif;

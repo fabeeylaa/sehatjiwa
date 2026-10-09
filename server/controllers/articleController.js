@@ -1,8 +1,10 @@
 import pool from "../config/db.js";
 
 export const getArticles = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = 10;
+  const page = Math.max(parseInt(req.query.page) || 1, 1);
+  // Frontend meminta ?limit=50 (user) / ?limit=20 (admin); dulu diabaikan dan
+  // selalu 10. Default tetap 10, dibatasi maksimal 50.
+  const limit = Math.min(Math.max(parseInt(req.query.limit) || 10, 1), 50);
   const offset = (page - 1) * limit;
 
   try {
@@ -45,6 +47,12 @@ export const getArticleBySlug = async (req, res) => {
   }
 };
 
+// Kategori yang dipakai di seluruh aplikasi (form admin, tab Edukasi,
+// rekomendasi hasil screening, dan challenge). Disimpan huruf kecil.
+const ALLOWED_CATEGORIES = ['mental health', 'tidur', 'nutrisi', 'olahraga'];
+
+const normalizeCategory = (value) => String(value || '').trim().toLowerCase();
+
 function slugify(text) {
   return text
     .toLowerCase()
@@ -55,10 +63,17 @@ function slugify(text) {
 }
 
 export const createArticle = async (req, res) => {
-  const { title, content, category, excerpt, cover_image } = req.body;
+  const { title, content, excerpt, cover_image } = req.body;
+  const category = normalizeCategory(req.body.category);
 
   if (!title || !content || !category) {
     return res.status(400).json({ message: 'Title, content, dan category wajib diisi' });
+  }
+
+  if (!ALLOWED_CATEGORIES.includes(category)) {
+    return res.status(400).json({
+      message: `Kategori tidak valid. Pilih salah satu: ${ALLOWED_CATEGORIES.join(', ')}`,
+    });
   }
 
   const slug = slugify(title);
@@ -82,7 +97,14 @@ export const createArticle = async (req, res) => {
 
 export const updateArticle = async (req, res) => {
   const { id } = req.params;
-  const { title, content, category, excerpt, cover_image } = req.body;
+  const { title, content, excerpt, cover_image } = req.body;
+  const category = normalizeCategory(req.body.category);
+
+  if (!ALLOWED_CATEGORIES.includes(category)) {
+    return res.status(400).json({
+      message: `Kategori tidak valid. Pilih salah satu: ${ALLOWED_CATEGORIES.join(', ')}`,
+    });
+  }
 
   try {
     const result = await pool.query(

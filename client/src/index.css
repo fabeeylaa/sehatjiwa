@@ -1,62 +1,61 @@
 
 :root {
-  /* Surface */
-  --surface: #ffffff;
-  --surface-bright: #f0fdf4;
-  --surface-container-low: #ebf6ef;
-  --surface-container: #e5f1e9;
-  --surface-container-high: #dfebe3;
-  --surface-container-highest: #dae5de;
-  --surface-soft: var(--surface-container-low);
-  --bg: var(--surface-bright);
+  /* Palet Baru */
+  --sage: #1FA25A;
+  --soft-sage: #A8E0BE;
+  --ivory: #EAF8EF;
+  --forest: #1B4332;
+  --muted: #5F7A6C;
+  --line: #D8EEDF;
+  --sage-tint: #D5F2E0;
+  --peach: #FDEBDD;
+  --sky: #DDEEF8;
+  --lilac: #ECE6F8;
+  --white: #FFFFFF;
 
-  /* Text */
-  --on-surface: #141e19;
-  --on-surface-variant: #404941;
-  --ink-900: #141a17;
-  --ink-soft: #6b7280;
-
-  /* Primary / Emerald - Brighter */
-  --primary: #22c55e;
-  --on-primary: #ffffff;
-  --primary-container: #dcfce7;
-  --on-primary-container: #14532d;
-  --secondary: #16a34a;
-
-  /* Forest tones */
-  --forest: #16a34a;
-  --forest-deep: #14532d;
-
-  /* Mint */
-  --mint-100: #eaf8ef;
-  --mint-200: #cdefda;
-  --mint-300: #aeeecb;
-
-  /* Periwinkle */
-  --periwinkle: #8b5cf6;
-  --periwinkle-soft: #ede9fe;
-
-  /* Functional */
+  /* Alias Kompatibilitas untuk CSS Lama */
+  --primary: var(--sage);
+  --on-primary: var(--white);
+  --secondary: #198a4d;
+  --primary-container: var(--sage-tint);
+  --on-primary-container: var(--forest);
+  --forest-deep: var(--forest);
+  --surface: var(--white);
+  --surface-bright: var(--ivory);
+  --surface-container-low: var(--ivory);
+  --surface-container: var(--sage-tint);
+  --surface-container-high: var(--soft-sage);
+  --surface-container-highest: var(--soft-sage);
+  --surface-soft: var(--ivory);
+  --bg: var(--ivory);
+  --on-surface: var(--forest);
+  --on-surface-variant: var(--muted);
+  --ink-900: var(--forest);
+  --ink-soft: var(--muted);
+  --mint-100: var(--ivory);
+  --mint-200: var(--sage-tint);
+  --mint-300: var(--soft-sage);
+  --periwinkle: var(--lilac);
+  --periwinkle-soft: var(--lilac);
   --amber-400: #e9b872;
   --gold: #fbbf24;
-  --gold-soft: #fef3c7;
-  --outline: #707971;
-  --outline-variant: #c0c9bf;
-  --line: var(--outline-variant);
+  --gold-soft: var(--peach);
+  --outline: var(--muted);
+  --outline-variant: var(--line);
+  --line: var(--line);
   --error: #ba1a1a;
 
-  /* Alias */
-  --white: var(--surface);
-  --light: var(--surface-bright);
-  --gray: var(--on-surface-variant);
-  --gray-light: var(--outline);
-  --border: var(--outline-variant);
+  /* Alias Lama */
+  --light: var(--ivory);
+  --gray: var(--muted);
+  --gray-light: var(--line);
+  --border: var(--line);
   --radius: 14px;
 
-  /* Shadows */
-  --shadow-card: 0 4px 12px rgba(0, 71, 38, 0.04);
-  --shadow-float: 0 12px 30px rgba(0, 71, 38, 0.08);
-  --shadow-lg: 0 20px 45px rgba(0, 71, 38, 0.12);
+  /* Shadows (update warna shadow ke forest) */
+  --shadow-card: 0 4px 12px rgba(27, 67, 50, 0.06);
+  --shadow-float: 0 12px 30px rgba(27, 67, 50, 0.1);
+  --shadow-lg: 0 20px 45px rgba(27, 67, 50, 0.15);
 
   /* Spacing */
   --space-xs: 0.5rem;

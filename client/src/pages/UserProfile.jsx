@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   User,
@@ -10,9 +10,8 @@ import {
   Leaf,
   Sparkles,
   Flame,
+  Pencil,
   Camera,
-  Save,
-  AtSign,
 } from 'lucide-react';
 import './UserProfile.css';
 import './UserProfilePolish.css';
@@ -30,47 +29,64 @@ function UserProfile({ user }) {
   const [latest, setLatest] = useState(null);
   const [streak, setStreak] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  
+  const [editing, setEditing] = useState(false);
+  const [localUser, setLocalUser] = useState(user);
   const [name, setName] = useState(user.name);
   const [username, setUsername] = useState(user.username || '');
-  const [avatar, setAvatar] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(user.avatar_url || null);
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const fileInputRef = useRef(null);
 
-  const isAdmin = user.role === 'admin';
+  const isAdmin = localUser.role === 'admin';
 
   const resetForm = () => {
     setName(user.name);
     setUsername(user.username || '');
-    setAvatar(null);
-    setMessage('');
+    setFile(null);
+    setPreview(null);
+    setError('');
+    setSuccess('');
   };
 
-  const handleSaveProfile = async () => {
+  const handleSave = async () => {
+    setError('');
+    setSuccess('');
     setSaving(true);
-    setMessage('');
     try {
-      const fd = new FormData();
-      fd.append('name', name);
-      fd.append('username', username);
-      if (avatar) fd.append('avatar', avatar);
-
-      const res = await fetch('/api/auth/profile', { method: 'PUT', body: fd, credentials: 'include' });
+      const form = new FormData();
+      form.append('name', name);
+      if (file) form.append('avatar', file);
+      const res = await fetch('/api/auth/profile', {
+        method: 'PUT',
+        credentials: 'include',
+        body: form,
+      });
       const data = await res.json();
-      if (!res.ok) {
-        setMessage(data.message || 'Gagal menyimpan profil');
-        return;
-      }
-      if (data.user.avatar_url) setAvatarPreview(data.user.avatar_url);
-      setAvatar(null);
-      setIsEditing(false);
-      setMessage('Profil berhasil disimpan');
-    } catch {
-      setMessage('Gagal menyimpan profil');
+      if (!res.ok) throw new Error(data.message || 'Gagal menyimpan profil');
+      setLocalUser(data.user);
+      setSuccess('Profil berhasil diperbarui');
+      setEditing(false);
+      setFile(null);
+      setPreview(null);
+    } catch (err) {
+      setError(err.message);
     } finally {
       setSaving(false);
     }
+  };
+
+  const cancelEdit = () => {
+    setEditing(false);
+    setName(localUser.name);
+    setUsername(localUser.username || '');
+    setFile(null);
+    setPreview(null);
+    setError('');
+    setSuccess('');
   };
 
   useEffect(() => {
@@ -104,14 +120,19 @@ function UserProfile({ user }) {
     }
   };
 
-  const initial = (name || '?').charAt(0).toUpperCase();
+  const onPickFile = (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
+  };
+
+  const initial = (localUser.name || '?').charAt(0).toUpperCase();
   const roleLabel = isAdmin ? 'Admin' : 'Pengguna';
 
   const items = [
-    { icon: <User size={20} />, label: 'Nama', value: name },
-    { icon: <AtSign size={20} />, label: 'Username', value: `@${username || '-'}` },
-    { icon: <Mail size={20} />, label: 'Email', value: user.email },
-    { icon: <ShieldCheck size={20} />, label: 'Peran', value: roleLabel },
+    { icon: <User size={20} />, label: 'Nama', value: localUser.name },
+    { icon: <Mail size={20} />, label: 'Email', value: localUser.email },
   ];
 
   const total = habits.length;
@@ -136,57 +157,46 @@ function UserProfile({ user }) {
       </div>
 
       <div className="prof-body">
-        <div className="prof-avatar">
-          {avatarPreview ? (
-            <img 
-              src={avatarPreview} 
-              alt="Foto profil" 
-              style={{width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover'}} 
-              onError={() => setAvatarPreview(null)}
+        <div className="prof-avatar-wrap" style={{ position: 'relative', display: 'inline-block' }}>
+          {preview || localUser.avatar_url ? (
+            <img
+              src={preview || localUser.avatar_url}
+              alt="Foto profil"
+              className="prof-avatar prof-avatar-img"
+              style={{ objectFit: 'cover' }}
             />
-          ) : initial}
+          ) : (
+            <div className="prof-avatar">{initial}</div>
+          )}
+          <button
+            className="prof-avatar-cam"
+            onClick={() => {
+              if (!editing) setEditing(true);
+              fileInputRef.current?.click();
+            }}
+            title="Ganti foto"
+            aria-label="Ganti foto profil"
+          >
+            <Camera size={16} />
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={onPickFile}
+          />
         </div>
-        <h2 className="prof-name">{name}</h2>
-        <span className="prof-badge">{roleLabel}</span>
+        <h2 className="prof-name">{localUser.name}</h2>
 
-        {isEditing ? (
-          <section className="prof-edit-form">
-            <label className="prof-avatar-btn" htmlFor="avatar-input">
-              <Camera size={14} /> Ganti Foto Profil
-              <input
-                id="avatar-input"
-                type="file"
-                accept="image/*"
-                style={{ display: 'none' }}
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (!file) return;
-                  setAvatar(file);
-                  setAvatarPreview(URL.createObjectURL(file));
-                }}
-              />
-            </label>
-            <label className="prof-field">
-              <span>Nama</span>
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} />
-            </label>
-            <label className="prof-field">
-              <span>Username</span>
-              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} maxLength={50} />
-              <small>Dipakai untuk menambahkan teman (@username). Harus unik.</small>
-            </label>
-            <div className="prof-form-actions">
-              <button className="btn btn-primary" onClick={handleSaveProfile} disabled={saving || !name.trim() || !username.trim()}>
-                <Save size={18} /> {saving ? 'Menyimpan...' : 'Simpan'}
-              </button>
-              <button className="btn btn-ghost" onClick={() => { resetForm(); setIsEditing(false); }} disabled={saving}>
-                Batal
-              </button>
-            </div>
-            {message && <p className="prof-edit-msg">{message}</p>}
-          </section>
-        ) : (
+        {error && <div className="soc-error" style={{ marginTop: '10px' }}>{error}</div>}
+        {success && <div className="soc-info" style={{ marginTop: '10px' }}>{success}</div>}
+
+        {!editing ? (
           <>
+            <button className="btn btn-ghost btn-sm" onClick={() => setEditing(true)} style={{ marginTop: '12px' }}>
+              <Pencil size={14} /> Ubah profil
+            </button>
             <div className="prof-grid">
               {items.map((it) => (
                 <div className="prof-tile" key={it.label}>
@@ -198,17 +208,51 @@ function UserProfile({ user }) {
                 </div>
               ))}
             </div>
-            {message && <p className="prof-edit-msg">{message}</p>}
-            <button className="btn btn-primary prof-edit-btn" onClick={() => setIsEditing(true)}>
-              <Camera size={18} /> Edit Profil
-            </button>
+          </>
+        ) : (
+          <>
+            <div className="prof-grid prof-grid-edit">
+              <label className="prof-tile prof-input-tile">
+                <div className="prof-tile-icon"><User size={20} /></div>
+                <div className="prof-tile-text">
+                  <span className="prof-tile-label">Nama</span>
+                  <input
+                    className="prof-input"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    maxLength={100}
+                  />
+                </div>
+              </label>
+              <div className="prof-tile">
+                <div className="prof-tile-icon"><Mail size={20} /></div>
+                <div className="prof-tile-text">
+                  <span className="prof-tile-label">Email</span>
+                  <span className="prof-tile-value">{localUser.email}</span>
+                </div>
+              </div>
+              <div className="prof-tile">
+                <div className="prof-tile-icon"><Pencil size={18} /></div>
+                <div className="prof-tile-text">
+                  <span className="prof-tile-label">Username (tidak dapat diubah)</span>
+                  <span className="prof-tile-value">@{localUser.username}</span>
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '12px', justifyContent: 'center' }}>
+              <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+              <button className="btn btn-ghost btn-sm" onClick={cancelEdit} disabled={saving}>
+                Batal
+              </button>
+            </div>
           </>
         )}
 
         {!isAdmin && (
           <section className="prof-stats">
             <h3>Statistik &amp; Ringkasan</h3>
-
             {!loaded ? (
               <p className="prof-muted">Memuat statistik...</p>
             ) : (

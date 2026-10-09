@@ -123,6 +123,33 @@
 
 .tab-panel .habit-streak-mini {
   font-weight: 600;
+  color: var(--on-surface-variant);
+  opacity: 0.75;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* Api streak menyala setelah target hari berturut-turut tercapai */
+.tab-panel .habit-streak-mini.lit {
+  color: #ea580c;
+  opacity: 1;
+}
+
+.tab-panel .habit-streak-mini.lit svg {
+  fill: #fb923c;
+  filter: drop-shadow(0 0 4px rgba(251, 146, 60, 0.7));
+  animation: habx-flame 1.4s ease-in-out infinite;
+}
+
+@keyframes habx-flame {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(-4deg);
+  }
 }
 
 .tab-panel .habit-suggest {
@@ -146,7 +173,8 @@
   .tab-panel .habit-stats .habit-stat-card,
   .tab-panel .habit-chart-card,
   .tab-panel .habit-list-card,
-  .tab-panel .habit-check.done {
+  .tab-panel .habit-check.done,
+  .tab-panel .habit-streak-mini.lit svg {
     animation: none;
   }
 }

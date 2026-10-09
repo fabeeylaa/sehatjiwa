@@ -38,6 +38,8 @@ function UserHabits() {
   const [newTitle, setNewTitle] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [adding, setAdding] = useState(null);
+  // Jumlah hari berturut-turut agar api streak menyala (diatur server)
+  const [streakTarget, setStreakTarget] = useState(7);
 
   const fetchWeekly = useCallback(async () => {
     const res = await fetch("/api/habits/weekly", { credentials: "include" });
@@ -50,6 +52,7 @@ function UserHabits() {
       const habitsRes = await fetch("/api/habits", { credentials: "include" });
       const habitsData = await habitsRes.json();
       setHabits(habitsData.habits || []);
+      if (habitsData.streak_target) setStreakTarget(habitsData.streak_target);
       await fetchWeekly();
     } catch (err) {
       console.error(err);
@@ -76,6 +79,7 @@ function UserHabits() {
       });
       if (!res.ok) throw new Error("Gagal menyimpan centang");
       await fetchData();
+      window.dispatchEvent(new CustomEvent('habits:updated'));
     } catch (err) {
       console.error(err);
       setHabits((prev) =>
@@ -111,7 +115,13 @@ function UserHabits() {
     const data = await res.json();
     if (data.habit) {
       setHabits((prev) => [
-        { ...data.habit, logged_today: false, week_count: 0 },
+        {
+          ...data.habit,
+          logged_today: false,
+          week_count: 0,
+          streak: 0,
+          streak_active: false,
+        },
         ...prev,
       ]);
     }
@@ -272,7 +282,8 @@ function UserHabits() {
         ) : (
           <div className="habit-items">
             {habits.map((habit) => {
-              const weekLogs = parseInt(habit.week_count) || 0;
+              const streak = habit.streak || 0;
+              const lit = Boolean(habit.streak_active);
               return (
                 <div
                   key={habit.id}
@@ -289,8 +300,16 @@ function UserHabits() {
                     <div className="habit-meta">
                       <span className="habit-freq">Harian</span>
                       <span className="habit-sep">{"\u00B7"}</span>
-                      <span className="habit-streak-mini">
-                        <Flame size={11} /> {weekLogs}/7 hari
+                      <span
+                        className={`habit-streak-mini ${lit ? "lit" : ""}`}
+                        title={
+                          lit
+                            ? `Streak ${streak} hari berturut-turut`
+                            : `Selesaikan ${streakTarget} hari berturut-turut untuk menyalakan api`
+                        }
+                      >
+                        <Flame size={11} />{" "}
+                        {lit ? `${streak} hari` : `${streak}/${streakTarget} hari`}
                       </span>
                     </div>
                   </div>

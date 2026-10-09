@@ -17,6 +17,7 @@ import friendRoutes from './routes/friendRoutes.js';
 import challengeRoutes from './routes/challengeRoutes.js';
 import leaderboardRoutes from "./routes/leaderboardRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -25,6 +26,17 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+app.use('/uploads', express.static('uploads'));
+
+app.use((err, req, res, next) => {
+  if (err && err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ message: 'File terlalu besar, maksimal 10MB' });
+  }
+  if (err && err.message === 'Hanya file gambar yang diperbolehkan') {
+    return res.status(400).json({ message: err.message });
+  }
+  next(err);
+});
 
 // Serve uploaded avatar files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -38,6 +50,7 @@ app.use('/api/social/friends', friendRoutes);
 app.use('/api/social/challenges', challengeRoutes);
 app.use("/api/social/leaderboard", leaderboardRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.get('/', (req, res) => {
   res.send('SehatJiwa API is running');

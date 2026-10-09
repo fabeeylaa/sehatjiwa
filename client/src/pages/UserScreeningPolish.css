@@ -191,3 +191,59 @@
     animation: none;
   }
 }
+/* Riwayat: nama kuesioner di atas tanggal */
+.tab-panel .scrx-hist-title {
+  font-weight: 600;
+  color: var(--on-surface);
+  margin-bottom: 2px;
+}
+
+/* Artikel rekomendasi di halaman hasil bisa diklik */
+.tab-panel .scrx-rec-link {
+  text-decoration: none;
+  color: inherit;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.tab-panel .scrx-rec-link:hover {
+  background: var(--surface-container-low);
+}
+
+/* Panduan memilih kuesioner */
+.tab-panel .scrx-guide {
+  margin: 12px 0 4px;
+  font-size: 13.5px;
+  color: var(--on-surface-variant);
+}
+
+.tab-panel .scrx-starter {
+  border-color: var(--forest);
+  background: var(--surface-container-low);
+}
+
+.tab-panel .scrx-starter-tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--forest);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.tab-panel .scrx-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--on-surface-variant);
+}
+
+.tab-panel .scrx-item-meta .scrx-done {
+  color: var(--forest);
+  font-weight: 600;
+}
